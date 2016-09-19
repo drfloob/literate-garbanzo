@@ -1,4 +1,4 @@
-Beginning with the [Github Archive on Google's BigQuery](https://bigquery.cloud.google.com/table/githubarchive:year.2015), I exported all years to a google cloud storage bucket in Avro format, export into multiple Avro files.
+Beginning with the [Github Archive on Google's BigQuery](https://bigquery.cloud.google.com/table/githubarchive:year.2015), I exported all years to a google cloud storage bucket in Avro format, split into multiple files.
 
 The 2015 table was too large for a single export job, so I split the table in two by adding a random value, saving the results to a temp table, and splitting on the random value into two new tables.
 
