@@ -3,3 +3,4 @@
 *.jar
 *~
 *.iml
+awsCredentials.properties
