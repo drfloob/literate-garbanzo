@@ -838,7 +838,6 @@ public class Root extends org.apache.avro.specific.SpecificRecordBase implements
       return this;
     }
 
-    @Override
     public Root build() {
       try {
         Root record = new Root();

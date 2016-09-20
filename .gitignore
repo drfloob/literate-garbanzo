@@ -4,3 +4,4 @@
 *~
 *.iml
 awsCredentials.properties
+target/
