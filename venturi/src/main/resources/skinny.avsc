@@ -1,0 +1,38 @@
+{
+    "type": "record",
+    "name": "SkinnyGHRecord",
+    "namespace": "com.drfloob.insight.pulse.schema.skinny",
+    "fields": [
+        {
+            "name": "type",
+            "type": "string",
+            "description": "https://developer.github.com/v3/activity/events/types/"
+        },
+        {
+            "name": "created_at",
+            "type": "long",
+            "logical": "timestamp-millis",
+            "description": "Timestamp of associated event"
+        },
+        {
+            "name": "id",
+            "type": "string",
+            "description": "Unique event identifier"
+        },
+        {
+            "name": "fromUser",
+            "type": "string",
+            "description": "Unique user identifier for user that originated this event"
+        },
+        {
+            "name": "toUser",
+            "type": "string",
+            "description": "Unique user identifier for recipients of this event"
+        },
+        {
+            "name": "url",
+            "type": "string",
+            "description": "Associated Event URL"
+        }
+    ]
+}
