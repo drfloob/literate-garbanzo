@@ -6,18 +6,19 @@ import com.drfloob.insight.pulse.venturi.schema.skinny.SkinnyGHRecord;
 import com.twitter.bijection.Injection;
 import com.twitter.bijection.avro.SpecificAvroCodecs;
 import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.BinaryDecoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KStreamBuilder;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import scala.reflect.ClassTag$;
-import scala.util.Try;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import org.apache.kafka.common.serialization.Serdes.BytesSerde;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ public class App
 
         Properties streamsConfig = new Properties();
         streamsConfig.load(App.class.getResourceAsStream("/kafka.properties"));
+        streamsConfig.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, StringSerde.class);
+        streamsConfig.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, BytesSerde.class);
+
 
         final Injection<SkinnyGHRecord, byte[]> outByteToAvro = SpecificAvroCodecs.toBinary(ClassTag$.MODULE$.<SkinnyGHRecord>apply(SkinnyGHRecord.class));
 
@@ -76,6 +80,7 @@ public class App
                         .setUrl(url)
                         .build();
                 ret.add(outByteToAvro.apply(skinny));
+                System.out.println("Processed record: " + skinny);
                 return ret;
             }
         }).to(serdeByte, serdeByte, "gh_skinny_topic");
