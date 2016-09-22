@@ -50,22 +50,24 @@ public class App {
 
         KafkaProducer<String, byte[]> producer = new KafkaProducer<String, byte[]>(kafkaProps);
 
-        int i = 0;
+        Properties hoseProps = new Properties();
+        hoseProps.load(App.class.getResourceAsStream("/hose.properties"));
+        int i = 0, max = Integer.parseInt(hoseProps.getProperty("max.count", "1000"));
         while (fatReader.hasNext()) {
             Root next = fatReader.next();
             byte[] bytes = recordInjection.apply(next);
             ProducerRecord<String, byte[]> pr = new ProducerRecord<String, byte[]>("gh_fat_topic", bytes);
-            System.out.println("Sending record: " + next);
+//            System.out.println("Sending record: " + next);
             producer.send(pr, new Callback() {
                 public void onCompletion(RecordMetadata recordMetadata, Exception e) {
-                    System.out.println("Callback called;");
-                    System.out.println(recordMetadata);
-                    System.err.println("Exception: "+ e);
+//                    System.out.println("Callback called;");
+//                    System.out.println(recordMetadata);
+//                    System.err.println("Exception: "+ e);
                 }
             });
 
             i++;
-            if (i >= 10)
+            if (i >= max)
                 break;
         }
         fatReader.close();
