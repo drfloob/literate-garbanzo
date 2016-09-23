@@ -21,6 +21,9 @@ import scala.reflect.ClassTag$;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by aj on 9/20/16.
@@ -32,16 +35,14 @@ public class App {
     public static void main(String[] args) throws IOException {
 //        AmazonS3 s3 = new AmazonS3Client(new PropertiesCredentials(new File("resources/awsCredentials.properties")));
         AmazonS3 s3 = new AmazonS3Client(new PropertiesCredentials(App.class.getResourceAsStream("/awsCredentials.properties")));
-        S3Object s3object = s3.getObject(new GetObjectRequest(BUCKET, KEY));
-        System.out.println(s3object.getObjectMetadata().getContentType());
-        System.out.println(s3object.getObjectMetadata().getContentLength());
+        // System.out.println(s3object.getObjectMetadata().getContentType());
+        // System.out.println(s3object.getObjectMetadata().getContentLength());
 
         Schema.Parser parser = new Schema.Parser();
 //        Schema rootSchema = parser.parse(new FileInputStream("gha_schema.avsc"));
         Schema rootSchema = parser.parse(App.class.getResourceAsStream("/gha_schema.avsc"));
 
         DatumReader<Root> rootDatumReader = new SpecificDatumReader<Root>(Root.class);
-        DataFileStream<Root> fatReader = new DataFileStream(s3object.getObjectContent(), rootDatumReader);
 
         Properties kafkaProps = new Properties();
 //        kafkaProps.load(new FileInputStream("resources/kafka.properties"));
@@ -53,24 +54,36 @@ public class App {
         Properties hoseProps = new Properties();
         hoseProps.load(App.class.getResourceAsStream("/hose.properties"));
         int i = 0, max = Integer.parseInt(hoseProps.getProperty("max.count", "1000"));
-        while (fatReader.hasNext()) {
-            Root next = fatReader.next();
-            byte[] bytes = recordInjection.apply(next);
-            ProducerRecord<String, byte[]> pr = new ProducerRecord<String, byte[]>("gh_fat_topic", bytes);
-//            System.out.println("Sending record: " + next);
-            producer.send(pr, new Callback() {
-                public void onCompletion(RecordMetadata recordMetadata, Exception e) {
-//                    System.out.println("Callback called;");
-//                    System.out.println(recordMetadata);
-//                    System.err.println("Exception: "+ e);
-                }
-            });
 
-            i++;
-            if (i >= max)
-                break;
-        }
-        fatReader.close();
+	List<String> s3files = new ArrayList<String>();
+	Scanner sc = new Scanner(App.class.getResourceAsStream("/s3files.txt"));
+	while (sc.hasNext()) {
+	    s3files.add(sc.next());
+	}
+
+	for (String key : s3files) {
+	    System.out.println("Processing s3 file: " + key);
+	    S3Object s3object = s3.getObject(new GetObjectRequest(BUCKET, key));
+	    DataFileStream<Root> fatReader = new DataFileStream(s3object.getObjectContent(), rootDatumReader);
+	    while (fatReader.hasNext()) {
+		Root next = fatReader.next();
+		byte[] bytes = recordInjection.apply(next);
+		ProducerRecord<String, byte[]> pr = new ProducerRecord<String, byte[]>("gh_fat_topic", bytes);
+		producer.send(pr, new Callback() {
+			public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+			    //                    System.out.println("Callback called;");
+			    //                    System.out.println(recordMetadata);
+			    //                    System.err.println("Exception: "+ e);
+			}
+		    });
+
+		i++;
+		if (i >= max)
+		    break;
+	    }
+	    fatReader.close();
+	}
+	System.out.println("processed " + i + " records");
         producer.close();
         System.out.println("Done");
     }
