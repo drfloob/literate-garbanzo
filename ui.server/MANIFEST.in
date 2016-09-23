@@ -1,0 +1,2 @@
+recursive-include uiserver/templates *
+recursive-include uiserver/static *
