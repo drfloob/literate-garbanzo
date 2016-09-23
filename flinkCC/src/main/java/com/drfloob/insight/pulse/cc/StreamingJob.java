@@ -17,7 +17,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer08;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer08;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import org.apache.flink.util.Collector;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Properties;
 
 
@@ -53,10 +53,13 @@ public class StreamingJob {
         Long windowLength = 500L;
         DataStream<DisjointSet<String>> cc = ses.aggregate(new WindowedConnectedComponents<String, SkinnyGHRecord>(windowLength));
 
+	final ObjectMapper mapper = new ObjectMapper();
+	
         cc.map(new MapFunction<DisjointSet<String>, String>() {
             @Override
             public String map(DisjointSet<String> value) throws Exception {
-                return value.toString();
+		return mapper.writeValueAsString(value.buildMap());
+                // return value.toString();
             }
         })
         .addSink(new FlinkKafkaProducer08<String>("gh_components", new SimpleStringSchema(), flinkProps));
