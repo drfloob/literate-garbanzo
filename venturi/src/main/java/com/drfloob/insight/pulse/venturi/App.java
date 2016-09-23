@@ -50,6 +50,9 @@ public class App
             public Iterable<byte[]> apply(byte[] bytes) {
                 ArrayList<byte[]> ret = new ArrayList<byte[]>();
 
+		// System.out.println("\n\n");
+		// System.out.println("Deserializing bytes");
+		
                 BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
                 Root r;
                 try {
@@ -60,17 +63,25 @@ public class App
                     return ret;
                 }
 
+		// System.out.println("Processing: " + r);
+
+		
+                // Actor tmpActor = r.getActor();
+                // if (tmpActor == null)
+                //     return ret;
+                // CharSequence tmpLogin = tmpActor.getLogin();
+                // if (tmpLogin == null)
+                //     return ret;
                 String toUser = PayloadParser.getToUser(r);
+                String fromUser = PayloadParser.getFromUser(r);
+                // String fromUser = tmpLogin.toString();
+                if (toUser == null || toUser.equals("") || fromUser == null || fromUser.equals("") || toUser.equals(fromUser)) {
+		    // System.err.println("Erroring out on user parsing: (" + toUser + "), (" + fromUser + ")");
+                    return ret;
+		}
+		    
                 String url = PayloadParser.getUrl(r);
-                Actor tmpActor = r.getActor();
-                if (tmpActor == null)
-                    return ret;
-                CharSequence tmpLogin = tmpActor.getLogin();
-                if (tmpLogin == null)
-                    return ret;
-                String fromUser = tmpLogin.toString();
-                if (toUser == null || fromUser == null || toUser.equals(fromUser))
-                    return ret;
+
                 SkinnyGHRecord skinny = SkinnyGHRecord.newBuilder()
                         .setCreatedAt(r.getCreatedAt())
                         .setId(r.getId())
@@ -84,7 +95,6 @@ public class App
                 return ret;
             }
         }).to(serdeByte, serdeByte, "gh_skinny_topic");
-
         KafkaStreams streams = new KafkaStreams(builder, streamsConfig);
         streams.start();
     }
