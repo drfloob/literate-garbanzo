@@ -1,0 +1,22 @@
+{
+    "name": "color-hash",
+    "version": "1.0.3",
+    "description": "Generate color based on the given string (using HSL color space and BKDRHash).",
+    "main": "lib/color-hash.js",
+    "scripts": {
+        "build": "browserify lib/color-hash.js -s ColorHash -o dist/color-hash.js",
+        "test": "istanbul cover _mocha"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/zenozeng/color-hash.git"
+    },
+    "author": "Zeno Zeng",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/zenozeng/color-hash/issues"
+    },
+    "devDependencies": {
+        "rewire": "^2.1.5"
+    }
+}

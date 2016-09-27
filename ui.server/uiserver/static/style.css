@@ -3,3 +3,9 @@
     height: 300px;
     margin: 0 auto;
 }
+
+#sigma_container {
+    max-width: 900px;
+    height: 600px;
+    margin: auto;
+}

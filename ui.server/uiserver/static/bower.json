@@ -1,0 +1,22 @@
+{
+  "name": "uiserver",
+  "homepage": "https://github.com/drfloob/literate-garbanzo",
+  "authors": [
+    "AJ Heller <aj@drfloob.com>"
+  ],
+  "description": "network pulse ui",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "sigma": "^1.1.0",
+    "color-hash": "^1.0.3"
+  }
+}

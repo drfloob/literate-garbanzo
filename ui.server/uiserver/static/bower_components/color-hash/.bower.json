@@ -1,0 +1,32 @@
+{
+  "name": "color-hash",
+  "version": "1.0.3",
+  "homepage": "https://github.com/zenozeng/color-hash",
+  "authors": [
+    "Zeno Zeng <zenoofzeng@gmail.com>"
+  ],
+  "description": "Generate color based on the given string.",
+  "main": "dist/color-hash.js",
+  "keywords": [
+    "color",
+    "hash"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "1.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.3",
+    "commit": "55820bb2d678e36fdf47538242e7b1437243c03b"
+  },
+  "_source": "https://github.com/zenozeng/color-hash.git",
+  "_target": "^1.0.3",
+  "_originalSource": "color-hash",
+  "_direct": true
+}

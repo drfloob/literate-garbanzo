@@ -19,8 +19,8 @@ socket.on('components', function(msg) {
     // console.log('value', msg.data);
     var newData = JSON.parse(msg.data);
     console.log('parsed', newData);
-    // updated3(newData);
-    dummyPrint(newData);
+    // dummyPrint(newData);
+    updatePulseGraph(newData);
     if (!paused)
 	timeoutHandle = setTimeout(getCC, timeoutMS);
 });
