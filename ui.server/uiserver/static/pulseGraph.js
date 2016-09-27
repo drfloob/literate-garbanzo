@@ -1,9 +1,22 @@
 var colorHash = new ColorHash();
-var nodeSize = 0.7;
+var nodeSize = 0.5;
 
-var s = new sigma("sigma_container");
-s.graph.addNode({id: 0, label: "drfloob", size: nodeSize, color: colorHash.hex("drfloob")});
-s.refresh();
+var s = new sigma();
+s.addRenderer({type: 'canvas', container: 'sigma_container'});
+// s.graph.addNode({id: 0, label: "drfloob", size: nodeSize, color: colorHash.hex("drfloob")});
+// s.refresh();
+
+function resetZoom() {
+    s.camera.goTo({x: 0, y: 0, ratio: 1})
+}
+
+function nodeClicked(node) {
+    console.log('node', node);
+    var neighborhood = s.graph.neighborhood(node.data.node.masterNode);
+    console.log(_.map(neighborhood.nodes, function(n) { return n.id;}));
+}
+
+s.bind("clickNode", nodeClicked);
 
 function updatePulseGraph(data) {
     s.graph.clear();
@@ -20,7 +33,8 @@ function updatePulseGraph(data) {
 	    size: nodeSize,
 	    color: color,
 	    x: x + Math.random()/jitterScale,
-	    y: y + Math.random()/jitterScale
+	    y: y + Math.random()/jitterScale,
+	    masterNode: key
 	});
 	_.each(val, function(user, idx) {
 	    if (user == key)
@@ -30,7 +44,8 @@ function updatePulseGraph(data) {
 		size: nodeSize,
 		color: color,
 		x: x + Math.random()/jitterScale,
-		y: y + Math.random()/jitterScale
+		y: y + Math.random()/jitterScale,
+		masterNode: key
 	    });
 	    s.graph.addEdge({
 		id: key + "_" + user,

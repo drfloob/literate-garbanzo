@@ -6,12 +6,14 @@
   <body>
     <button onclick="getCC(); return false;">Get Graph</button>
     <button onclick="togglePause(); return false;">Toggle Pause</button>
+    <button onclick="resetZoom(); return false;">Reset Zoom and Center</button>
     <div id="sigma_container"></div>
   </body>
 
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <script src="static/bower_components/color-hash/dist/color-hash.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.1.0/sigma.min.js"></script>
+  <script src="static/sigma.plugins.neighborhoods.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
   <script src="static/pulseGraph.js"></script>
   <script src="static/socketwork.js"></script>
