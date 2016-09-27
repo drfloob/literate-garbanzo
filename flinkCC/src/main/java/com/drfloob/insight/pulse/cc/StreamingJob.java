@@ -34,7 +34,7 @@ public class StreamingJob {
 
         AvroDeserializationSchema<SkinnyGHRecord> skinnySchema = new AvroDeserializationSchema<>(SkinnyGHRecord.class);
         FlinkKafkaConsumer08<SkinnyGHRecord> kafkaConsumer = new FlinkKafkaConsumer08<>("gh_skinny_topic", skinnySchema, flinkProps);
-		DataStream<SkinnyGHRecord> skinnyStream = env.addSource(kafkaConsumer);
+	DataStream<SkinnyGHRecord> skinnyStream = env.addSource(kafkaConsumer);
 
         SingleOutputStreamOperator<SkinnyGHRecord> sos =  skinnyStream.assignTimestampsAndWatermarks(new IngestionTimeExtractor<SkinnyGHRecord>());
         SimpleEdgeStream<String, SkinnyGHRecord> ses = new SimpleEdgeStream<String, SkinnyGHRecord>(sos.map(
@@ -49,8 +49,8 @@ public class StreamingJob {
                 }
         ), env);
 
-        // 1/2 second processing time window
-        Long windowLength = 500L;
+        // Long windowLength = 500L;
+	Long windowLength = Long.parseLong(flinkProps.getProperty("window.length"));
         DataStream<DisjointSet<String>> cc = ses.aggregate(new WindowedConnectedComponents<String, SkinnyGHRecord>(windowLength));
 
 	final ObjectMapper mapper = new ObjectMapper();

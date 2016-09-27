@@ -196,7 +196,7 @@ under the License.
                                     <exclude>org.apache.flink:flink-core</exclude>
                                     <exclude>org.apache.flink:flink-java</exclude>
                                     <!--<exclude>org.apache.flink:flink-scala_2.10</exclude>-->
-                                    <exclude>org.apache.flink:flink-runtime_2.10</exclude>
+                                    <!-- <exclude>org.apache.flink:flink-runtime_2.10</exclude> -->
                                     <exclude>org.apache.flink:flink-optimizer_2.10</exclude>
                                     <exclude>org.apache.flink:flink-clients_2.10</exclude>
                                     <exclude>org.apache.flink:flink-avro_2.10</exclude>
