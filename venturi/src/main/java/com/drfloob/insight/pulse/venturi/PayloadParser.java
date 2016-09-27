@@ -2,6 +2,7 @@ package com.drfloob.insight.pulse.venturi;
 
 import com.drfloob.insight.pulse.venturi.schema.Root;
 import com.drfloob.insight.pulse.venturi.schema.root.Actor;
+import com.drfloob.insight.pulse.venturi.schema.root.Repo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -271,6 +272,12 @@ public class PayloadParser {
         return extractURLFromRoot(r);
     }
     private static String extractURLFromRoot(Root r) {
-        return r.getRepo().getUrl().toString();
+	Repo repo = r.getRepo();
+	if (repo == null)
+	    return null;
+	CharSequence url = repo.getUrl();
+	if (url == null)
+	    return null;
+        return url.toString();
     }
 }

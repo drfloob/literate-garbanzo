@@ -29,8 +29,12 @@ public class App
     public static void main( String[] args ) throws IOException
     {
         final Serde<byte[]> serdeByte = Serdes.ByteArray();
-        KStreamBuilder builder = new KStreamBuilder();
-        KStream<byte[], byte[]> stream = builder.stream(serdeByte, serdeByte, "gh_fat_topic");
+
+	Properties venturiProps = new Properties();
+	venturiProps.load(App.class.getResourceAsStream("/venturi.properties"));
+
+	KStreamBuilder builder = new KStreamBuilder();
+        KStream<byte[], byte[]> stream = builder.stream(serdeByte, serdeByte, venturiProps.getProperty("gh_fat_topic"));
 
         Schema.Parser parser = new Schema.Parser();
         Schema inSchema = parser.parse(App.class.getResourceAsStream("/gha_schema.avsc"));
@@ -47,54 +51,46 @@ public class App
         final SpecificDatumReader<Root> rootReader = new SpecificDatumReader<Root>(Root.class);
 
         stream.flatMapValues(new ValueMapper<byte[], Iterable<byte[]>>() {
-            public Iterable<byte[]> apply(byte[] bytes) {
-                ArrayList<byte[]> ret = new ArrayList<byte[]>();
+		public Iterable<byte[]> apply(byte[] bytes) {
+		    ArrayList<byte[]> ret = new ArrayList<byte[]>();
 
-		// System.out.println("\n\n");
-		// System.out.println("Deserializing bytes");
-		
-                BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
-                Root r;
-                try {
-                    r = rootReader.read(null, decoder);
-                } catch(IOException e) {
-                    System.err.println("Oops. Error decoding byte stream to Root avro record.");
-                    //TODO: better error handling
-                    return ret;
-                }
-
-		// System.out.println("Processing: " + r);
+		    BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
+		    Root r;
+		    try {
+			r = rootReader.read(null, decoder);
+		    } catch(IOException e) {
+			System.err.println("Oops. Error decoding byte stream to Root avro record.");
+			//TODO: better error handling
+			return ret;
+		    }
 
 		
-                // Actor tmpActor = r.getActor();
-                // if (tmpActor == null)
-                //     return ret;
-                // CharSequence tmpLogin = tmpActor.getLogin();
-                // if (tmpLogin == null)
-                //     return ret;
-                String toUser = PayloadParser.getToUser(r);
-                String fromUser = PayloadParser.getFromUser(r);
-                // String fromUser = tmpLogin.toString();
-                if (toUser == null || toUser.equals("") || fromUser == null || fromUser.equals("") || toUser.equals(fromUser)) {
-		    // System.err.println("Erroring out on user parsing: (" + toUser + "), (" + fromUser + ")");
-                    return ret;
-		}
+		    String toUser = PayloadParser.getToUser(r);
+		    String fromUser = PayloadParser.getFromUser(r);
+		    if (toUser == null || toUser.equals("") || fromUser == null || fromUser.equals("") || toUser.equals(fromUser)) {
+			return ret;
+		    }
 		    
-                String url = PayloadParser.getUrl(r);
-
-                SkinnyGHRecord skinny = SkinnyGHRecord.newBuilder()
+		    String url = PayloadParser.getUrl(r);
+		    if (url == null)
+			url = "null";
+		    CharSequence id = r.getId();
+		    if (id == null)
+			id = "null";
+		    
+		    SkinnyGHRecord skinny = SkinnyGHRecord.newBuilder()
                         .setCreatedAt(r.getCreatedAt())
-                        .setId(r.getId())
+                        .setId(id)
                         .setType(r.getType())
                         .setFromUser(fromUser)
                         .setToUser(toUser)
                         .setUrl(url)
                         .build();
-                ret.add(outByteToAvro.apply(skinny));
-                System.out.println("Processed record: " + skinny);
-                return ret;
-            }
-        }).to(serdeByte, serdeByte, "gh_skinny_topic");
+		    ret.add(outByteToAvro.apply(skinny));
+		    // System.out.println("Processed record: " + skinny);
+		    return ret;
+		}
+	    }).to(serdeByte, serdeByte, venturiProps.getProperty("gh_skinny_topic"));
         KafkaStreams streams = new KafkaStreams(builder, streamsConfig);
         streams.start();
     }
