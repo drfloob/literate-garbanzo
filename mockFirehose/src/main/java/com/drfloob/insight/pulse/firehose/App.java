@@ -10,6 +10,7 @@ import com.twitter.bijection.Injection;
 import com.twitter.bijection.avro.GenericAvroCodecs;
 import com.twitter.bijection.avro.SpecificAvroCodecs;
 import org.apache.avro.Schema;
+import org.apache.avro.AvroTypeException;
 import org.apache.avro.file.DataFileStream;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
@@ -66,7 +67,14 @@ public class App {
 	    S3Object s3object = s3.getObject(new GetObjectRequest(BUCKET, key));
 	    DataFileStream<Root> fatReader = new DataFileStream(s3object.getObjectContent(), rootDatumReader);
 	    while (fatReader.hasNext()) {
-		Root next = fatReader.next();
+		Root next;
+		try {
+		    next = fatReader.next();
+		} catch(AvroTypeException e) {
+		    System.err.println(e.toString());
+		    e.printStackTrace();
+		    continue;
+		}
 		byte[] bytes = recordInjection.apply(next);
 		ProducerRecord<String, byte[]> pr = new ProducerRecord<String, byte[]>("gh_fat_topic", bytes);
 		producer.send(pr, new Callback() {
