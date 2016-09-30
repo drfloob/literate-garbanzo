@@ -1,0 +1,10 @@
+jobmanager.rpc.address: ec2-52-41-132-54.us-west-2.compute.amazonaws.com
+jobmanager.rpc.port: 6123
+jobmanager.heap.mb: 1024
+taskmanager.heap.mb: 5500
+taskmanager.numberOfTaskSlots: 2
+taskmanager.memory.preallocate: false
+parallelism.default: 6
+jobmanager.web.port: 8081
+taskmanager.tmp.dirs: /var/flink/tmp
+fs.hdfs.hadoopconf: /usr/local/hadoop/etc/hadoop
