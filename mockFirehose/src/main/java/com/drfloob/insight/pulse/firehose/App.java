@@ -86,7 +86,7 @@ public class App {
 		    });
 
 		i++;
-		if (i >= max)
+		if (i >= max && max != -1)
 		    break;
 	    }
 	    fatReader.close();
