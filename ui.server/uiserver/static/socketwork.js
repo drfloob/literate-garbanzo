@@ -15,15 +15,18 @@ socket.on('response', function(msg){
 });
 
 socket.on('components', function(msg) {
-    // console.log('components', msg);
-    // console.log('value', msg.data);
     var newData = JSON.parse(msg.data);
     console.log('parsed', newData);
-    // dummyPrint(newData);
-    updatePulseGraph(newData);
+    filteredKeys = _.filter(_.keys(newData), function(k) { return newData[k].length > 2; });
+    filteredData = _.pick(newData, filteredKeys);
+    console.log('filtered', filteredData);
+    updatePulseGraph(filteredData);
     if (!paused)
 	timeoutHandle = setTimeout(getCC, timeoutMS);
+    updatePlot(newData);
 });
+
+
 
 socket.on('error', function(err) {
     console.log("error returned: ", err);
