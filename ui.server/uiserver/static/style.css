@@ -8,4 +8,11 @@
     width: 75%;
     height: 500px;
     border: 1px solid #ccc;
+    float: left;
 }
+
+#barChart {
+    width: 22%;
+    float: right;
+}
+
