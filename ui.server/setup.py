@@ -7,5 +7,5 @@ setup(
     packages=['uiserver'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=['flask', 'eventlet', 'flask_socketio', 'kafka_python']
+    install_requires=['Flask', 'eventlet', 'flask_socketio', 'kafka_python']
 )
