@@ -128,3 +128,25 @@ peg sshcmd-node literate-garbanzo 1 "~/kafka-create-pulse-topics.sh"
 
 ```
 
+Start services (this could take a minute):
+
+```bash
+./service_start.sh
+```
+
+In four shells, connected to each node, run the following in screen sessions (or via nohup)
+```
+# on node 1
+./runFlinkCC.sh
+
+# on node 2
+./runVenturi.sh
+
+# on node 3
+./runFirehose.sh
+
+# on node 4
+cd flasky
+. bin/activate
+./run.py
+```
