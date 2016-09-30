@@ -1,4 +1,4 @@
-jobmanager.rpc.address: ec2-52-41-132-54.us-west-2.compute.amazonaws.com
+jobmanager.rpc.address: ec2-52-38-118-162.us-west-2.compute.amazonaws.com
 jobmanager.rpc.port: 6123
 jobmanager.heap.mb: 1024
 taskmanager.heap.mb: 5500
