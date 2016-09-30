@@ -68,19 +68,50 @@ peg sshcmd-cluster literate-garbanzo "sudo apt-get update; sudo apt-get install 
 ```
 
 
+
+
+
+
 ## Loading up Network Pulse code
+
+First, you must teach each component about each other
+
+```bash
+FLINK_CONNECT=$(./ec2.setup/flinkConnectionStringBuilder.sh)
+sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" venturi/src/main/resources/kafka.properties
+sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" mockFirehose/src/main/resources/kafka.properties
+sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" flinkCC/src/main/resources/flink.properties
+
+ZC=$(ec2.setup/kafkaZookeeperConnectStringBuilder.sh)
+sed -i "s/zookeeper\.connect=.*/zookeeper.connect=$ZC/" venturi/src/main/resources/kafka.properties
+sed -i "s/zookeeper\.connect=.*/zookeeper.connect=$ZC/" flinkCC/src/main/resources/flink.properties
+
+```
+
+Then build
+
+```bash
+cd mockFirehose; mvn clean compile package; cd ..
+cd venturi; mvn clean compile package; cd ..
+cd flinkCC; mvn clean package -Pbuild-jar; cd ..
+```
 
 Presuming each sub-project is built, the following should get the files in place:
 
 ```bash
 peg scp to-rem literate-garbanzo 1 flinkCC/target/flinkCC-0.0.1.jar /home/ubuntu
+peg scp to-rem literate-garbanzo 1 flinkCC/src/main/resources/flink.properties /home/ubuntu
 peg scp to-rem literate-garbanzo 1 flinkCC/runFlinkCC.sh /home/ubuntu
 
 peg scp to-rem literate-garbanzo 2 venturi/target/venturi-0.0.1-jar-with-dependencies.jar /home/ubuntu
+peg scp to-rem literate-garbanzo 2 venturi/src/main/resources/kafka.properties /home/ubuntu
+peg scp to-rem literate-garbanzo 2 venturi/src/main/resources/venturi.properties /home/ubuntu
 peg scp to-rem literate-garbanzo 2 venturi/runVenturi.sh /home/ubuntu
 
 peg scp to-rem literate-garbanzo 3 mockFirehose/target/firehose-0.0.1-jar-with-dependencies.jar /home/ubuntu
 peg scp to-rem literate-garbanzo 3 mockFirehose/src/main/resources/hose.properties /home/ubuntu
+peg scp to-rem literate-garbanzo 3 mockFirehose/src/main/resources/kafka.properties /home/ubuntu
+peg scp to-rem literate-garbanzo 3 mockFirehose/src/main/resources/s3files.txt /home/ubuntu
 peg scp to-rem literate-garbanzo 3 mockFirehose/runFirehose.sh /home/ubuntu
 
 peg sshcmd-node literate-garbanzo 4 "sudo pip install virtualenv; mkdir ~/flasky; cd flasky; virtualenv ."
@@ -96,3 +127,4 @@ peg scp to-rem literate-garbanzo 1 ec2.setup/kafka-create-pulse-topics.sh /home/
 peg sshcmd-node literate-garbanzo 1 "~/kafka-create-pulse-topics.sh"
 
 ```
+
