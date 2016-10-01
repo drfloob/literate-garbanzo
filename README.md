@@ -131,7 +131,7 @@ peg sshcmd-node literate-garbanzo 1 "~/kafka-create-pulse-topics.sh"
 Start services (this could take a minute):
 
 ```bash
-./service_start.sh
+./bin/service_start.sh
 ```
 
 In four shells, connected to each node, run the following in screen sessions (or via nohup)
