@@ -4,7 +4,7 @@ from flask_socketio import SocketIO, emit
 from kafka import KafkaConsumer
 
 timeout = 700
-consumer = KafkaConsumer("gh_components", bootstrap_servers='172.31.0.4:9092,172.31.0.6:9092,172.31.0.7:9092,172.31.0.8:9092,',
+consumer = KafkaConsumer("gh_components", bootstrap_servers='172.31.0.10:9092,172.31.0.8:9092,172.31.0.6:9092,172.31.0.7:9092',
                          group_id="flasky", client_id="flasky", api_version=(0,8,2),
                          fetch_max_wait_ms=timeout, request_timeout_ms=timeout, consumer_timeout_ms=timeout)
 
