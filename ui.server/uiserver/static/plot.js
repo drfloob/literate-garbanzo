@@ -1,3 +1,5 @@
+var plotMaxNodes = 1500;
+
 var plotData = [{
     type: 'bar',
     x: [0,0,0,0],
@@ -11,7 +13,7 @@ Plotly.newPlot('barChart', plotData, layout);
 
 function updatePlot(data) {
     console.log('updatePlot: data: ', data);
-    if (_.size(_.keys(data)) > 1000) {
+    if (_.size(_.keys(data)) > plotMaxNodes) {
 	alert("NOPE!")
 	return;
     }
