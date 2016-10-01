@@ -52,6 +52,16 @@ peg scp to-rem literate-garbanzo 4 ec2.setup/config/server.properties /usr/local
 peg sshcmd-node literate-garbanzo 4 "sed -i 's/broker.id=.*/broker.id=3/' /usr/local/kafka/config/server.properties"
 ```
 
+To run pulse at a steady state, kafka is going to need more space. Spin up 4 extra magnetic volumes, 30GB or so, and attach them to each node, build the filesystem, configure them to mount at /tmp, and reboot.
+
+```bash
+peg sshcmd-cluster literate-garbanzo 'sudo mkfs.ext4 /dev/xvdf'
+peg sshcmd-cluster literate-garbanzo 'sudo sh -c "echo \"/dev/xvdf /tmp ext4 rw,noexec,nosuid,nodev,nofail,nobootwait,commet=cloudconfig 0 2\" >> /etc/fstab"'
+peg sshcmd-cluster literate-garbanzo 'sudo reboot'
+peg sshcmd-cluster literate-garbanzo 'sudo chmod -R a=rwx,o+t /tmp'
+```
+
+
 Time to git'er runnin
 
 ```bash
@@ -116,6 +126,10 @@ peg scp to-rem literate-garbanzo 3 mockFirehose/runFirehose.sh /home/ubuntu
 
 peg sshcmd-node literate-garbanzo 4 "sudo pip install virtualenv; mkdir ~/flasky; cd flasky; virtualenv ."
 peg scp to-rem literate-garbanzo 4 ui.server/run.py /home/ubuntu/flasky
+
+FLINK_CONNECT=$(./ec2.setup/flinkConnectionStringBuilder.sh)
+sed -i "s/bootstrap_servers='[^']*'/bootstrap_servers='$FLINK_CONNECT'/" ui.server/uiserver/__init__.py
+
 cd ui.server
 ./buildAndDeploy.sh
 ```
