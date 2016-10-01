@@ -28,7 +28,7 @@ public class StreamingJob {
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         Properties flinkProps = new Properties();
-        flinkProps.load(StreamingJob.class.getResourceAsStream("/flink.properties"));
+        flinkProps.load(StreamingJob.class.getResourceAsStream("/flinkCC.properties"));
 
         DatumReader<SkinnyGHRecord> reader = new SpecificDatumReader<SkinnyGHRecord>(SkinnyGHRecord.class);
 
