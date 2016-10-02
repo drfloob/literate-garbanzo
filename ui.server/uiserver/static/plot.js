@@ -8,7 +8,7 @@ var plotData = [{
 
 var plotlyLayout = {xaxis: {range: [0,1000]}};
 
-Plotly.newPlot('barChart', plotData, layout);
+Plotly.newPlot('barChart', plotData, plotlyLayout);
 
 function updatePlot(data) {
     console.log('updatePlot: data: ', data);
