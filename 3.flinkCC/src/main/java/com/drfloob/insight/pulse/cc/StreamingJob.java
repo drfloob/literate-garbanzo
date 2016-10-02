@@ -1,6 +1,6 @@
 package com.drfloob.insight.pulse.cc;
 
-import com.drfloob.insight.pulse.cc.schema.skinny.SkinnyGHRecord;
+import com.drfloob.insight.pulse.schema.skinny.SkinnyGHRecord;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.flink.api.common.functions.FilterFunction;
