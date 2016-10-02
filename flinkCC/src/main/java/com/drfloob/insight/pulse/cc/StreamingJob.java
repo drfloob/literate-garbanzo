@@ -5,9 +5,11 @@ import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.streaming.SimpleEdgeStream;
 import org.apache.flink.graph.streaming.example.util.DisjointSet;
+import org.apache.flink.graph.streaming.library.ConnectedComponents;
 import org.apache.flink.streaming.StephanEwen.AvroDeserializationSchema;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -15,6 +17,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.IngestionTimeExtractor;
 import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks;
 import org.apache.flink.streaming.api.watermark.Watermark;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer08;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer08;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
@@ -28,7 +32,10 @@ public class StreamingJob {
     public static void main(String[] args) throws Exception {
 	// set up the streaming execution environment
 	final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
+	env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
+	    99999, // number of restart attempts
+	   0 // delay in milliseconds
+	));
         Properties flinkProps = new Properties();
         flinkProps.load(StreamingJob.class.getResourceAsStream("/flinkCC.properties"));
 
@@ -38,38 +45,46 @@ public class StreamingJob {
         FlinkKafkaConsumer08<SkinnyGHRecord> kafkaConsumer = new FlinkKafkaConsumer08<>("gh_skinny_topic", skinnySchema, flinkProps);
 	DataStream<SkinnyGHRecord> skinnyStream = env.addSource(kafkaConsumer);
 
-        // SingleOutputStreamOperator<SkinnyGHRecord> sos =  skinnyStream.assignTimestampsAndWatermarks(new IngestionTimeExtractor<SkinnyGHRecord>());
-        SingleOutputStreamOperator<SkinnyGHRecord> sos =  skinnyStream.assignTimestampsAndWatermarks(new GHEventTimeExtractor());
+        SingleOutputStreamOperator<SkinnyGHRecord> sos =  skinnyStream.assignTimestampsAndWatermarks(new IngestionTimeExtractor<SkinnyGHRecord>());
+        // SingleOutputStreamOperator<SkinnyGHRecord> sos =  skinnyStream.assignTimestampsAndWatermarks(new GHEventTimeExtractor());
 
-        SimpleEdgeStream<String, SkinnyGHRecord> ses = new SimpleEdgeStream<String, SkinnyGHRecord>(sos.map(
-													    new MapFunction<SkinnyGHRecord, Edge<String, SkinnyGHRecord>>() {
-														@Override
-														public Edge<String, SkinnyGHRecord> map(SkinnyGHRecord value) throws Exception {
-														    return new Edge<String, SkinnyGHRecord>(
-																			    value.getFromUser().toString(),
-																			    value.getToUser().toString(),
-																			    value);
-														}
-													    }
-													    ), env);
+        SimpleEdgeStream<String, SkinnyGHRecord> ses = new SimpleEdgeStream<String, SkinnyGHRecord>(
+	    sos.map(
+		new MapFunction<SkinnyGHRecord, Edge<String, SkinnyGHRecord>>() {
+		    @Override
+		    public Edge<String, SkinnyGHRecord> map(SkinnyGHRecord value) throws Exception {
+			return new Edge<String, SkinnyGHRecord>(
+								value.getFromUser().toString(),
+								value.getToUser().toString(),
+								value);
+		    }
+		}
+	    ), env);
 	
-        // Long windowLength = 500L;
 	Long windowLength = Long.parseLong(flinkProps.getProperty("window.length"));
-        DataStream<DisjointSet<String>> cc = ses.aggregate(new WindowedConnectedComponents<String, SkinnyGHRecord>(windowLength));
+	Long windowSlide = Long.parseLong(flinkProps.getProperty("window.slide"));
+	SlidingEventTimeWindows windowAssigner = SlidingEventTimeWindows.of(Time.milliseconds(windowLength), Time.milliseconds(windowSlide));
+        // DataStream<DisjointSet<String>> cc = ses.aggregate(new ConnectedComponents<String, SkinnyGHRecord>(windowAssigner));
+        DataStream<DisjointSet<String>> cc = ses.aggregate(new WindowedConnectedComponents<String, SkinnyGHRecord>(windowAssigner));
 
 	final ObjectMapper mapper = new ObjectMapper();
-	
         cc.map(new MapFunction<DisjointSet<String>, String>() {
 		@Override
 		public String map(DisjointSet<String> value) throws Exception {
 		    return mapper.writeValueAsString(value.buildMap());
-		    // return value.toString();
 		}
 	    })
 	    .addSink(new FlinkKafkaProducer08<String>("gh_components", new SimpleStringSchema(), flinkProps));
 
+	while (true) {
         // execute program
-	env.execute("Flink Streaming Connected Components");
+	    try {
+		env.execute("Flink Streaming Connected Components");
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+	}
+	    
     }
 
 
