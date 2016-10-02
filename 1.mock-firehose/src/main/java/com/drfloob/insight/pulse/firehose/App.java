@@ -31,7 +31,6 @@ import java.util.Scanner;
  */
 public class App {
     private static final String BUCKET = "githubarchive-truth";
-    private static final String KEY = "2011-000000000000.avro";
 
     public static void main(String[] args) throws IOException {
         AmazonS3 s3 = new AmazonS3Client(new PropertiesCredentials(App.class.getResourceAsStream("/awsCredentials.properties")));
