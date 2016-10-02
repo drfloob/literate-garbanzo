@@ -4,6 +4,7 @@ var paused = false;
 var maxNodesToProcess = 2000;
 
 socket.on('connect', function() {
+    resetZoom();
     console.log("connected");
 });
 

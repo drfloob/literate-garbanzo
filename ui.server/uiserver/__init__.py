@@ -34,7 +34,7 @@ def hello():
 
 def bg_kafka_loop():
     while True:
-        socketio.sleep(0.42)
+        socketio.sleep(0.2)
         val = next(consumer, NullRecord(b'[]'))
         socketio.emit('components', {'data': val.value.decode('utf-8').replace("=", ":")}, broadcast=True)
 
