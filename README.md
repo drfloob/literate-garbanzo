@@ -116,11 +116,11 @@ First, you must teach each component about each other
 FLINK_CONNECT=$(./0.ec2-setup/flinkConnectionStringBuilder.sh)
 sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" 2.venturi/src/main/resources/kafka.properties
 sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" 1.mock-firehose/src/main/resources/kafka.properties
-sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" flinkCC/src/main/resources/flink.properties
+sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" 3.flinkCC/src/main/resources/flink.properties
 
 ZC=$(0.ec2-setup/kafkaZookeeperConnectStringBuilder.sh)
 sed -i "s/zookeeper\.connect=.*/zookeeper.connect=$ZC/" 2.venturi/src/main/resources/kafka.properties
-sed -i "s/zookeeper\.connect=.*/zookeeper.connect=$ZC/" flinkCC/src/main/resources/flink.properties
+sed -i "s/zookeeper\.connect=.*/zookeeper.connect=$ZC/" 3.flinkCC/src/main/resources/flink.properties
 
 ```
 
@@ -129,15 +129,15 @@ Then build
 ```bash
 cd 1.mock-firehose; mvn clean compile package; cd ..
 cd 2.venturi; mvn clean compile package; cd ..
-cd flinkCC; mvn clean package -Pbuild-jar; cd ..
+cd 3.flinkCC; mvn clean package -Pbuild-jar; cd ..
 ```
 
 Presuming each sub-project is built, the following should get the files in place:
 
 ```bash
-peg scp to-rem literate-garbanzo 1 flinkCC/target/flinkCC-0.0.1.jar /home/ubuntu
-peg scp to-rem literate-garbanzo 1 flinkCC/src/main/resources/flink.properties /home/ubuntu
-peg scp to-rem literate-garbanzo 1 flinkCC/runFlinkCC.sh /home/ubuntu
+peg scp to-rem literate-garbanzo 1 3.flinkCC/target/flinkCC-0.0.1.jar /home/ubuntu
+peg scp to-rem literate-garbanzo 1 3.flinkCC/src/main/resources/flink.properties /home/ubuntu
+peg scp to-rem literate-garbanzo 1 3.flinkCC/runFlinkCC.sh /home/ubuntu
 
 peg scp to-rem literate-garbanzo 2 2.venturi/target/venturi-0.0.1-jar-with-dependencies.jar /home/ubuntu
 peg scp to-rem literate-garbanzo 2 2.venturi/src/main/resources/kafka.properties /home/ubuntu
