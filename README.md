@@ -128,7 +128,7 @@ Then build
 
 ```bash
 cd 1.mock-firehose; mvn clean compile package; cd ..
-cd 2.venturi; mvn clean compile package; cd ..
+./2.venturi/build.sh
 cd 3.flinkCC; mvn clean package -Pbuild-jar; cd ..
 ```
 
@@ -139,10 +139,7 @@ peg scp to-rem literate-garbanzo 1 3.flinkCC/target/flinkCC-0.0.1.jar /home/ubun
 peg scp to-rem literate-garbanzo 1 3.flinkCC/src/main/resources/flink.properties /home/ubuntu
 peg scp to-rem literate-garbanzo 1 3.flinkCC/runFlinkCC.sh /home/ubuntu
 
-peg scp to-rem literate-garbanzo 2 2.venturi/target/venturi-0.0.1-jar-with-dependencies.jar /home/ubuntu
-peg scp to-rem literate-garbanzo 2 2.venturi/src/main/resources/kafka.properties /home/ubuntu
-peg scp to-rem literate-garbanzo 2 2.venturi/src/main/resources/venturi.properties /home/ubuntu
-peg scp to-rem literate-garbanzo 2 2.venturi/runVenturi.sh /home/ubuntu
+./2.venturi/deploy.sh
 
 peg scp to-rem literate-garbanzo 3 1.mock-firehose/target/firehose-0.0.1-jar-with-dependencies.jar /home/ubuntu
 peg scp to-rem literate-garbanzo 3 1.mock-firehose/src/main/resources/hose.properties /home/ubuntu
