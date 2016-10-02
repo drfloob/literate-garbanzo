@@ -1,0 +1,66 @@
+{
+  "type" : "record",
+  "namespace": "com.drfloob.insight.pulse.schema.gh.y2015",
+  "name" : "Root",
+  "fields" : [ {
+    "name" : "type",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "public",
+    "type" : [ "boolean", "null" ]
+  }, {
+    "name" : "payload",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "repo_id",
+    "type" : [ "long", "null" ]
+  }, {
+    "name" : "repo_name",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "repo_url",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "actor_id",
+    "type" : [ "long", "null" ]
+  }, {
+    "name" : "actor_login",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "actor_gravatar_id",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "actor_avatar_url",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "actor_url",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "org_id",
+    "type" : [ "long", "null" ]
+  }, {
+    "name" : "org_login",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "org_gravatar_id",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "org_avatar_url",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "org_url",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "created_at",
+    "type" : [ "long", "null" ]
+  }, {
+    "name" : "id",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "other",
+    "type" : [ "string", "null" ]
+  }, {
+    "name" : "rnd",
+    "type" : [ "double", "null" ]
+  } ]
+}
