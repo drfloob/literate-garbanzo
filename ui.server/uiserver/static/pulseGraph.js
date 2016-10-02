@@ -1,22 +1,26 @@
 var colorHash = new ColorHash();
-var nodeSize = 0.3;
+var nodeSize = 9;
+var edgeSize = 2;
 var nodeOpacity = 0.42;
 var jitterScale = 30;
 
-var s = new sigma();
+var s = new sigma({settings: {
+    autoRescale: false,
+    autoResize: false,
+    autoScale: false
+}});
+
 s.addRenderer({
     type: 'canvas',
-    container: 'sigma_container',
-    settings: {
-	minEdgeSize: 1,
-	minNodeSize: 0.3,
-	autoRescale: false
-    }
+    container: 'sigma_container'
 });
 
 
 function resetZoom() {
-    s.camera.goTo({x: 0, y: 0, ratio: 1})
+    s.camera.goTo({
+	x: s.renderers[0].width/2,
+	y: s.renderers[0].height/2,
+	ratio: 1})
 }
 
 function nodeClicked(node) {
@@ -84,7 +88,7 @@ function updatePulseGraph(data) {
 		id: key + "_" + user,
 		source: user,
 		target: key,
-		size: 2
+		size: edgeSize
 	    });
 	});
     });
