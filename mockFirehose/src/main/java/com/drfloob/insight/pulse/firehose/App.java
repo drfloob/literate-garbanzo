@@ -75,6 +75,7 @@ public class App {
 		    e.printStackTrace();
 		    continue;
 		}
+		// System.out.println(next.getCreatedAt());
 		byte[] bytes = recordInjection.apply(next);
 		ProducerRecord<String, byte[]> pr = new ProducerRecord<String, byte[]>("gh_fat_topic", bytes);
 		producer.send(pr, new Callback() {
