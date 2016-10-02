@@ -61,9 +61,14 @@ public class App {
 		}
 		reader.close();
 	    } catch (AvroTypeException e) {
-		e.printStackTrace();
+		// e.printStackTrace();
 		System.err.println("Invalid avro format, read " + j + " records, trying 2015 from the beginning");
 		j=0;
+		try {
+		    s3object.close();
+		} catch(IOException hidden___this_may_be_evil) {
+		    System.err.println("Could not close s3object. It may not matter");
+		}
 	    }
 
 	    
@@ -82,6 +87,11 @@ public class App {
 		} catch (AvroTypeException e) {
 		    e.printStackTrace();
 		    System.err.println("Invalid avro format, giving up!");
+		    try {
+			s3object.close();
+		    } catch(IOException hidden___this_may_be_evil) {
+			System.err.println("Could not close s3object. It may not matter");
+		    }
 		}
 	    }
 
