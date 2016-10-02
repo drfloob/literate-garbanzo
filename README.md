@@ -115,7 +115,7 @@ First, you must teach each component about each other
 ```bash
 FLINK_CONNECT=$(./0.ec2-setup/flinkConnectionStringBuilder.sh)
 sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" venturi/src/main/resources/kafka.properties
-sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" mockFirehose/src/main/resources/kafka.properties
+sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" 1.mock-firehose/src/main/resources/kafka.properties
 sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" flinkCC/src/main/resources/flink.properties
 
 ZC=$(0.ec2-setup/kafkaZookeeperConnectStringBuilder.sh)
@@ -127,7 +127,7 @@ sed -i "s/zookeeper\.connect=.*/zookeeper.connect=$ZC/" flinkCC/src/main/resourc
 Then build
 
 ```bash
-cd mockFirehose; mvn clean compile package; cd ..
+cd 1.mock-firehose; mvn clean compile package; cd ..
 cd venturi; mvn clean compile package; cd ..
 cd flinkCC; mvn clean package -Pbuild-jar; cd ..
 ```
@@ -144,11 +144,11 @@ peg scp to-rem literate-garbanzo 2 venturi/src/main/resources/kafka.properties /
 peg scp to-rem literate-garbanzo 2 venturi/src/main/resources/venturi.properties /home/ubuntu
 peg scp to-rem literate-garbanzo 2 venturi/runVenturi.sh /home/ubuntu
 
-peg scp to-rem literate-garbanzo 3 mockFirehose/target/firehose-0.0.1-jar-with-dependencies.jar /home/ubuntu
-peg scp to-rem literate-garbanzo 3 mockFirehose/src/main/resources/hose.properties /home/ubuntu
-peg scp to-rem literate-garbanzo 3 mockFirehose/src/main/resources/kafka.properties /home/ubuntu
-peg scp to-rem literate-garbanzo 3 mockFirehose/src/main/resources/s3files.txt /home/ubuntu
-peg scp to-rem literate-garbanzo 3 mockFirehose/runFirehose.sh /home/ubuntu
+peg scp to-rem literate-garbanzo 3 1.mock-firehose/target/firehose-0.0.1-jar-with-dependencies.jar /home/ubuntu
+peg scp to-rem literate-garbanzo 3 1.mock-firehose/src/main/resources/hose.properties /home/ubuntu
+peg scp to-rem literate-garbanzo 3 1.mock-firehose/src/main/resources/kafka.properties /home/ubuntu
+peg scp to-rem literate-garbanzo 3 1.mock-firehose/src/main/resources/s3files.txt /home/ubuntu
+peg scp to-rem literate-garbanzo 3 1.mock-firehose/runFirehose.sh /home/ubuntu
 
 peg sshcmd-node literate-garbanzo 4 "sudo pip install virtualenv; mkdir ~/flasky; cd flasky; virtualenv ."
 peg scp to-rem literate-garbanzo 4 ui.server/run.py /home/ubuntu/flasky
