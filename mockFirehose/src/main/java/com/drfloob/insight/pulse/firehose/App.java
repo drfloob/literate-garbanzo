@@ -66,6 +66,7 @@ public class App {
 	    System.out.println("Processing s3 file: " + key);
 	    S3Object s3object = s3.getObject(new GetObjectRequest(BUCKET, key));
 	    DataFileStream<Root> fatReader = new DataFileStream(s3object.getObjectContent(), rootDatumReader);
+	    long j = 0;
 	    while (fatReader.hasNext()) {
 		Root next;
 		try {
@@ -86,13 +87,15 @@ public class App {
 			}
 		    });
 
+		j++;
 		i++;
 		if (i >= max && max != -1)
 		    break;
 	    }
 	    fatReader.close();
+	    System.out.println(" - file contained " + j + " avro records");
 	}
-	System.out.println("processed " + i + " records");
+	System.out.println("processed " + i + " records total");
         producer.close();
         System.out.println("Done");
     }
