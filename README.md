@@ -3,8 +3,8 @@
 ## Getting Started
 
 ```bash
-peg up ec2.setup/peg/quad/master.yml&
-peg up ec2.setup/peg/quad/workers.yml&
+peg up 0.ec2-setup/peg/quad/master.yml&
+peg up 0.ec2-setup/peg/quad/workers.yml&
 ```
 
 Wait a few minutes for these to spin up, then install a bunch of great pipeline tools!
@@ -23,32 +23,32 @@ peg install literate-garbanzo flink
 To configure flink:
 
 ```bash
-MDNS=$(./ec2.setup/getMasterPublicDNS.sh)
-sed -i "s/jobmanager\.rpc\.address.*/jobmanager.rpc.address: $MDNS/" ec2.setup/config/flink-conf.yaml
+MDNS=$(./0.ec2-setup/getMasterPublicDNS.sh)
+sed -i "s/jobmanager\.rpc\.address.*/jobmanager.rpc.address: $MDNS/" 0.ec2-setup/config/flink-conf.yaml
 
-peg scp to-rem literate-garbanzo 1 ec2.setup/config/flink-conf.yaml /usr/local/flink/conf/
-peg scp to-rem literate-garbanzo 2 ec2.setup/config/flink-conf.yaml /usr/local/flink/conf/
-peg scp to-rem literate-garbanzo 3 ec2.setup/config/flink-conf.yaml /usr/local/flink/conf/
-peg scp to-rem literate-garbanzo 4 ec2.setup/config/flink-conf.yaml /usr/local/flink/conf/
+peg scp to-rem literate-garbanzo 1 0.ec2-setup/config/flink-conf.yaml /usr/local/flink/conf/
+peg scp to-rem literate-garbanzo 2 0.ec2-setup/config/flink-conf.yaml /usr/local/flink/conf/
+peg scp to-rem literate-garbanzo 3 0.ec2-setup/config/flink-conf.yaml /usr/local/flink/conf/
+peg scp to-rem literate-garbanzo 4 0.ec2-setup/config/flink-conf.yaml /usr/local/flink/conf/
 
 ```
 
 To configure kafka:
 
 ```bash
-ZC=$(ec2.setup/kafkaZookeeperConnectStringBuilder.sh)
-sed -i "s/zookeeper.connect=.*/zookeeper.connect=$ZC/" ec2.setup/config/server.properties
+ZC=$(0.ec2-setup/kafkaZookeeperConnectStringBuilder.sh)
+sed -i "s/zookeeper.connect=.*/zookeeper.connect=$ZC/" 0.ec2-setup/config/server.properties
 
-peg scp to-rem literate-garbanzo 1 ec2.setup/config/server.properties /usr/local/kafka/config/
+peg scp to-rem literate-garbanzo 1 0.ec2-setup/config/server.properties /usr/local/kafka/config/
 peg sshcmd-node literate-garbanzo 1 "sed -i 's/broker.id=.*/broker.id=0/' /usr/local/kafka/config/server.properties"
 
-peg scp to-rem literate-garbanzo 2 ec2.setup/config/server.properties /usr/local/kafka/config/
+peg scp to-rem literate-garbanzo 2 0.ec2-setup/config/server.properties /usr/local/kafka/config/
 peg sshcmd-node literate-garbanzo 2 "sed -i 's/broker.id=.*/broker.id=1/' /usr/local/kafka/config/server.properties"
 
-peg scp to-rem literate-garbanzo 3 ec2.setup/config/server.properties /usr/local/kafka/config/
+peg scp to-rem literate-garbanzo 3 0.ec2-setup/config/server.properties /usr/local/kafka/config/
 peg sshcmd-node literate-garbanzo 3 "sed -i 's/broker.id=.*/broker.id=2/' /usr/local/kafka/config/server.properties"
 
-peg scp to-rem literate-garbanzo 4 ec2.setup/config/server.properties /usr/local/kafka/config/
+peg scp to-rem literate-garbanzo 4 0.ec2-setup/config/server.properties /usr/local/kafka/config/
 peg sshcmd-node literate-garbanzo 4 "sed -i 's/broker.id=.*/broker.id=3/' /usr/local/kafka/config/server.properties"
 ```
 
@@ -81,7 +81,7 @@ peg sshcmd-cluster literate-garbanzo "sudo apt-get update; sudo apt-get install 
 ## Installing rethink
 
 ```bash
-peg up ec2.setup/peg/rethink/rethink.yml
+peg up 0.ec2-setup/peg/rethink/rethink.yml
 ```
 
 After a few minutes, the 3-node cluster should be up. The following is modified from the [RethingDB Installation](https://rethinkdb.com/docs/install/ubuntu/) instructions for Ubuntu.
@@ -95,9 +95,9 @@ sudo apt-get update && sudo apt-get install -y rethinkdb"
 Now that rethink is installed, configure it:
 
 ```bash
-peg scp to-rem literate-garbanzo-rethink 1 ec2.setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
-peg scp to-rem literate-garbanzo-rethink 2 ec2.setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
-peg scp to-rem literate-garbanzo-rethink 3 ec2.setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
+peg scp to-rem literate-garbanzo-rethink 1 0.ec2-setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
+peg scp to-rem literate-garbanzo-rethink 2 0.ec2-setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
+peg scp to-rem literate-garbanzo-rethink 3 0.ec2-setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
 peg sshcmd-cluster literate-garbanzo-rethink "sudo mv rethink.pulse.conf /etc/rethinkdb/instances.d/"
 ```
 
@@ -113,12 +113,12 @@ peg sshcmd-cluster literate-garbanzo-rethink "sudo /etc/init.d/rethinkdb start"
 First, you must teach each component about each other
 
 ```bash
-FLINK_CONNECT=$(./ec2.setup/flinkConnectionStringBuilder.sh)
+FLINK_CONNECT=$(./0.ec2-setup/flinkConnectionStringBuilder.sh)
 sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" venturi/src/main/resources/kafka.properties
 sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" mockFirehose/src/main/resources/kafka.properties
 sed -i "s/bootstrap\.servers=.*/bootstrap.servers=$FLINK_CONNECT/" flinkCC/src/main/resources/flink.properties
 
-ZC=$(ec2.setup/kafkaZookeeperConnectStringBuilder.sh)
+ZC=$(0.ec2-setup/kafkaZookeeperConnectStringBuilder.sh)
 sed -i "s/zookeeper\.connect=.*/zookeeper.connect=$ZC/" venturi/src/main/resources/kafka.properties
 sed -i "s/zookeeper\.connect=.*/zookeeper.connect=$ZC/" flinkCC/src/main/resources/flink.properties
 
@@ -153,7 +153,7 @@ peg scp to-rem literate-garbanzo 3 mockFirehose/runFirehose.sh /home/ubuntu
 peg sshcmd-node literate-garbanzo 4 "sudo pip install virtualenv; mkdir ~/flasky; cd flasky; virtualenv ."
 peg scp to-rem literate-garbanzo 4 ui.server/run.py /home/ubuntu/flasky
 
-FLINK_CONNECT=$(./ec2.setup/flinkConnectionStringBuilder.sh)
+FLINK_CONNECT=$(./0.ec2-setup/flinkConnectionStringBuilder.sh)
 sed -i "s/bootstrap_servers='[^']*'/bootstrap_servers='$FLINK_CONNECT'/" ui.server/uiserver/__init__.py
 
 cd ui.server
@@ -163,7 +163,7 @@ cd ui.server
 Create kafka topics with appropriate settings for this application
 
 ```bash
-peg scp to-rem literate-garbanzo 1 ec2.setup/kafka-create-pulse-topics.sh /home/ubuntu/
+peg scp to-rem literate-garbanzo 1 0.ec2-setup/kafka-create-pulse-topics.sh /home/ubuntu/
 peg sshcmd-node literate-garbanzo 1 "~/kafka-create-pulse-topics.sh"
 
 ```
