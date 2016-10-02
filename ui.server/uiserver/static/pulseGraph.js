@@ -1,6 +1,7 @@
 var colorHash = new ColorHash();
 var nodeSize = 0.3;
 var nodeOpacity = 0.42;
+var jitterScale = 30;
 
 var s = new sigma();
 s.addRenderer({
@@ -29,19 +30,43 @@ function nodeClicked(node) {
 
 s.bind("clickNode", nodeClicked);
 
+// from http://erlycoder.com/49/javascript-hash-functions-to-convert-string-into-integer-hash-
+djb2Code = function(str){
+    var hash = 5381;
+    for (i = 0; i < str.length; i++) {
+	char = str.charCodeAt(i);
+	hash = ((hash << 5) + hash) + char; /* hash * 33 + c */
+    }
+    return hash;
+}
+
+clusterJitter = function(str) {
+    return ((djb2Code(str) % 512 - 255) / 255) / jitterScale;
+}
+
+function makeUserCoords(user, center) {
+    var r = (djb2Code("length-"+user) % 255 / 255) * jitterScale
+    var phi = (djb2Code(user+"-angle!!!") % 255 / 255) * 2 * Math.PI;
+    return {
+	x: r*Math.cos(phi) + center.x,
+	y: r*Math.sin(phi) + center.y
+    }; 
+}
 
 function addNode(user, master) {
     var color = colorHash.rgb(master);
-    var jitterScale = 15;
-    var x = (color[0]/255 + Math.random()/jitterScale) * s.renderers[0].width;
-    var y = (color[1]/255 + Math.random()/jitterScale) * s.renderers[0].height;
+    var center = {
+	x: color[0]/255 * s.renderers[0].width,
+	y: color[1]/255 * s.renderers[0].height
+    };
+    var coords = makeUserCoords(user, center);
     var rgba="rgba("+color[0]+","+color[1]+","+color[2]+","+nodeOpacity+")";
     s.graph.addNode({
 	id: user,
 	size: nodeSize,
 	color: rgba,
-	x: x,
-	y: y,
+	x: coords.x,
+	y: coords.y,
 	masterNode: master
     });
 }

@@ -1,9 +1,3 @@
-#dummy {
-    width: 90%;
-    height: 300px;
-    margin: 0 auto;
-}
-
 #sigma_container {
     width: 75%;
     height: 500px;
@@ -13,6 +7,6 @@
 
 #barChart {
     width: 22%;
-    float: right;
+    float: left;
 }
 
