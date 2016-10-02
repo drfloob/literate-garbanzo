@@ -5,7 +5,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
-import com.drfloob.insight.pulse.firehose.schema.Root;
+import com.drfloob.insight.pulse.schema.gh.main.Root;
 import com.twitter.bijection.Injection;
 import com.twitter.bijection.avro.GenericAvroCodecs;
 import com.twitter.bijection.avro.SpecificAvroCodecs;
@@ -34,19 +34,16 @@ public class App {
     private static final String KEY = "2011-000000000000.avro";
 
     public static void main(String[] args) throws IOException {
-//        AmazonS3 s3 = new AmazonS3Client(new PropertiesCredentials(new File("resources/awsCredentials.properties")));
         AmazonS3 s3 = new AmazonS3Client(new PropertiesCredentials(App.class.getResourceAsStream("/awsCredentials.properties")));
         // System.out.println(s3object.getObjectMetadata().getContentType());
         // System.out.println(s3object.getObjectMetadata().getContentLength());
 
         Schema.Parser parser = new Schema.Parser();
-//        Schema rootSchema = parser.parse(new FileInputStream("gha_schema.avsc"));
         Schema rootSchema = parser.parse(App.class.getResourceAsStream("/gha_schema.avsc"));
 
         DatumReader<Root> rootDatumReader = new SpecificDatumReader<Root>(Root.class);
 
         Properties kafkaProps = new Properties();
-//        kafkaProps.load(new FileInputStream("resources/kafka.properties"));
         kafkaProps.load(App.class.getResourceAsStream("/kafka.properties"));
         Injection<Root, byte[]> recordInjection = SpecificAvroCodecs.toBinary(ClassTag$.MODULE$.<Root>apply(Root.class));
 
