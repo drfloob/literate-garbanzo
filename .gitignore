@@ -7,8 +7,8 @@ awsCredentials.properties
 target/
 site-packages/
 __pycache__/
-ui.server/lib
-ui.server/bin
-ui.server/ui.server.egg-info
-ui.server/include
-ui.server/dist
+4.ui-server/lib
+4.ui-server/bin
+4.ui-server/ui.server.egg-info
+4.ui-server/include
+4.ui-server/dist

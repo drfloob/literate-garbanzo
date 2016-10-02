@@ -151,12 +151,12 @@ peg scp to-rem literate-garbanzo 3 1.mock-firehose/src/main/resources/s3files.tx
 peg scp to-rem literate-garbanzo 3 1.mock-firehose/runFirehose.sh /home/ubuntu
 
 peg sshcmd-node literate-garbanzo 4 "sudo pip install virtualenv; mkdir ~/flasky; cd flasky; virtualenv ."
-peg scp to-rem literate-garbanzo 4 ui.server/run.py /home/ubuntu/flasky
+peg scp to-rem literate-garbanzo 4 4.ui-server/run.py /home/ubuntu/flasky
 
 FLINK_CONNECT=$(./0.ec2-setup/flinkConnectionStringBuilder.sh)
-sed -i "s/bootstrap_servers='[^']*'/bootstrap_servers='$FLINK_CONNECT'/" ui.server/uiserver/__init__.py
+sed -i "s/bootstrap_servers='[^']*'/bootstrap_servers='$FLINK_CONNECT'/" 4.ui-server/uiserver/__init__.py
 
-cd ui.server
+cd 4.ui-server
 ./buildAndDeploy.sh
 ```
 
