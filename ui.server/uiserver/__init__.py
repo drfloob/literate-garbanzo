@@ -14,21 +14,15 @@ NullRecord = collections.namedtuple('NullRecord', ['value'])
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-@socketio.on('my event')
-def echo_socket(msg):
-    emit('response', {'data': 'you said: ' + msg['data']})
-            
-@socketio.on('get cc')
-def connect_push():
-    print("connected for graph")
-    val = next(consumer, NullRecord(b'[]'))
-    print("next consumer retrieved/mocked")
-    emit('components', {'data': val.value.decode('utf-8').replace("=", ":")})
-    print("sent graph")
+thread = None
 
-@socketio.on('connection')
+@socketio.on('connect')
 def connected():
     print('connected')
+    global thread
+    if thread is None:
+        thread = socketio.start_background_task(target=bg_kafka_loop)
+    
 
 @socketio.on('disconnect')
 def disconnected():
@@ -37,6 +31,12 @@ def disconnected():
 @app.route('/')
 def hello():
     return render_template("main.html")
+
+def bg_kafka_loop():
+    while True:
+        socketio.sleep(0.42)
+        val = next(consumer, NullRecord(b'[]'))
+        socketio.emit('components', {'data': val.value.decode('utf-8').replace("=", ":")}, broadcast=True)
 
 if __name__ == "__main__":
     # from uiserver import socketio, app
