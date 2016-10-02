@@ -1,10 +1,10 @@
 purchase_type: on_demand
 subnet_id: subnet-306b4654
-num_instances: 2
+num_instances: 3
 key_name: adam-heller
 security_group_ids: sg-6d46ad14
 instance_type: m4.large
 tag_name: literate-garbanzo-rethink
-vol_size: 20
+vol_size: 50
 role: worker
 use_eips: true

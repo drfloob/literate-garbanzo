@@ -78,8 +78,34 @@ peg sshcmd-cluster literate-garbanzo "sudo apt-get update; sudo apt-get install 
 ```
 
 
+## Installing rethink
 
+```bash
+peg up ec2.setup/peg/rethink/rethink.yml
+```
 
+After a few minutes, the 3-node cluster should be up. The following is modified from the [RethingDB Installation](https://rethinkdb.com/docs/install/ubuntu/) instructions for Ubuntu.
+
+```bash
+peg sshcmd-cluster literate-garbanzo-rethink "source /etc/lsb-release && echo \"deb http://download.rethinkdb.com/apt \$DISTRIB_CODENAME main\" | sudo tee /etc/apt/sources.list.d/rethinkdb.list && \
+wget -qO- https://download.rethinkdb.com/apt/pubkey.gpg | sudo apt-key add - && \
+sudo apt-get update && sudo apt-get install -y rethinkdb"
+```
+
+Now that rethink is installed, configure it:
+
+```bash
+peg scp to-rem literate-garbanzo-rethink 1 ec2.setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
+peg scp to-rem literate-garbanzo-rethink 2 ec2.setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
+peg scp to-rem literate-garbanzo-rethink 3 ec2.setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
+peg sshcmd-cluster literate-garbanzo-rethink "sudo mv rethink.pulse.conf /etc/rethinkdb/instances.d/"
+```
+
+And run it
+
+```bash
+peg sshcmd-cluster literate-garbanzo-rethink "sudo /etc/init.d/rethinkdb start"
+```
 
 
 ## Loading up Network Pulse code
