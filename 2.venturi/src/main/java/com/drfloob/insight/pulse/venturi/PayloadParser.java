@@ -1,8 +1,8 @@
 package com.drfloob.insight.pulse.venturi;
 
-import com.drfloob.insight.pulse.venturi.schema.Root;
-import com.drfloob.insight.pulse.venturi.schema.root.Actor;
-import com.drfloob.insight.pulse.venturi.schema.root.Repo;
+import com.drfloob.insight.pulse.schema.gh.main.Root;
+import com.drfloob.insight.pulse.schema.gh.main.root.Actor;
+import com.drfloob.insight.pulse.schema.gh.main.root.Repo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
