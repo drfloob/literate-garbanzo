@@ -108,6 +108,29 @@ peg sshcmd-cluster literate-garbanzo-rethink "sudo /etc/init.d/rethinkdb start"
 ```
 
 
+## Install rethink proxies on Flink servers
+
+```bash
+peg sshcmd-cluster literate-garbanzo "source /etc/lsb-release && echo \"deb http://download.rethinkdb.com/apt \$DISTRIB_CODENAME main\" | sudo tee /etc/apt/sources.list.d/rethinkdb.list && \
+wget -qO- https://download.rethinkdb.com/apt/pubkey.gpg | sudo apt-key add - && \
+sudo apt-get update && sudo apt-get install -y rethinkdb"
+```
+
+```bash
+peg scp to-rem literate-garbanzo 1 0.ec2-setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
+peg scp to-rem literate-garbanzo 2 0.ec2-setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
+peg scp to-rem literate-garbanzo 3 0.ec2-setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
+peg scp to-rem literate-garbanzo 4 0.ec2-setup/peg/rethink/rethink.pulse.conf /home/ubuntu/
+peg sshcmd-cluster literate-garbanzo "sudo mv rethink.pulse.conf /etc/rethinkdb/instances.d/"
+```
+
+To start 
+```bash
+peg sshcmd-cluster literate-garbanzo "sudo rethinkdb proxy --config-file /etc/rethinkdb/instances.d/rethink.pulse.conf --log-file /tmp/rethink.log &"
+```
+
+
+
 ## Loading up Network Pulse code
 
 First, you must teach each component about each other
@@ -127,9 +150,9 @@ sed -i "s/zookeeper\.connect=.*/zookeeper.connect=$ZC/" 3.flinkCC/src/main/resou
 Then build
 
 ```bash
-cd 1.mock-firehose; mvn clean compile package; cd ..
+./1.mock-firehose; mvn clean compile package; cd ..
 ./2.venturi/build.sh
-cd 3.flinkCC; mvn clean package -Pbuild-jar; cd ..
+./3.flinkCC; mvn clean package -Pbuild-jar; cd ..
 ```
 
 Presuming each sub-project is built, the following should get the files in place:
@@ -155,6 +178,12 @@ sed -i "s/bootstrap_servers='[^']*'/bootstrap_servers='$FLINK_CONNECT'/" 4.ui-se
 
 cd 4.ui-server
 ./buildAndDeploy.sh
+cd ..
+
+cd 5.kafkaRethink
+mvn clean compile package
+peg scp to-rem literate-garbanzo 1 target/kafkaRethink-0.0.1-jar-with-dependencies.jar /home/ubuntu
+peg scp to-rem literate-garbanzo 1 runRethinkSink.sh /home/ubuntu
 ```
 
 Create kafka topics with appropriate settings for this application
@@ -174,7 +203,8 @@ Start services (this could take a minute):
 In four shells, connected to each node, run the following in screen sessions (or via nohup)
 ```
 # on node 1
-./runFlinkCC.sh
+./runFlinkCC.sh&
+./runRethinkSink.sh
 
 # on node 2
 ./runVenturi.sh
