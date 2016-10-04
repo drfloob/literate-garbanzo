@@ -1,2 +1,3 @@
 #!/bin/bash
-peg describe literate-garbanzo | grep Public | head -1 | sed 's/.*Public DNS:\s*//'
+cd "$(dirname $0)"
+./getPublicDNS.sh | head -1
