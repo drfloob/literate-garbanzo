@@ -62,7 +62,7 @@ public class App {
 		reader.close();
 	    } catch (AvroTypeException e) {
 		// e.printStackTrace();
-		System.err.println("Invalid avro format, read " + j + " records, trying 2015 from the beginning");
+		System.err.println("Invalid avro format, read " + j + " records, trying "+key+" from the beginning");
 		j=0;
 		try {
 		    s3object.close();
