@@ -30,18 +30,6 @@ socket.on('error', function(err) {
     console.log("error returned: ", err);
 });
 
-function sendMsg() {
-    socket.emit('my event', {data: document.getElementById('input').value});
-    return false;
-}
-
-
 function togglePause() {
     paused = !paused;
-}
-
-function dummyPrint(newData) {
-    if (_.has(newData, 'length'))
-	return;
-    document.getElementById("dummy").innerText = JSON.stringify(newData, null, 2);
 }

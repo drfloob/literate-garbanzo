@@ -10,9 +10,8 @@ def bg_rethink():
     r.connect("172.31.0.12", 28015, db="pulse").repl()
     ccCursor = r.table("clustered_components").changes().run()
     for cc in ccCursor:
-        print('got cc')
         socketio.emit('components', {'data': cc}, json=True)
-        socketio.sleep(0.2)
+        socketio.sleep(0.4)
 
 thread = None
 @socketio.on('connect')
