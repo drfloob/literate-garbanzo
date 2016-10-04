@@ -36,10 +36,6 @@ public class App
 	KStreamBuilder builder = new KStreamBuilder();
         KStream<byte[], byte[]> stream = builder.stream(serdeByte, serdeByte, venturiProps.getProperty("gh_fat_topic"));
 
-        Schema.Parser parser = new Schema.Parser();
-        Schema inSchema = parser.parse(App.class.getResourceAsStream("/gha_schema.avsc"));
-        Schema outSchema = parser.parse(App.class.getResourceAsStream("/skinny.avsc"));
-
         Properties streamsConfig = new Properties();
         streamsConfig.load(App.class.getResourceAsStream("/kafka.properties"));
         streamsConfig.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, StringSerde.class);
