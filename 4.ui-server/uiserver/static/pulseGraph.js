@@ -17,10 +17,18 @@ s.addRenderer({
 
 
 function resetZoom() {
-    s.camera.goTo({
-	x: s.renderers[0].width/2,
-	y: s.renderers[0].height/2,
-	ratio: 1})
+    sigma.misc.animation.camera(
+	s.camera,
+	{
+	    ratio: 1,
+	    x: s.renderers[0].width/2,
+	    y: s.renderers[0].height/2
+	}, {duration: 400}
+    );
+    // s.camera.goTo({
+    // 	x: s.renderers[0].width/2,
+    // 	y: s.renderers[0].height/2,
+    // 	ratio: 1})
 }
 
 function nodeClicked(node) {
