@@ -11,7 +11,7 @@ socket.on('connect', function() {
 socket.on('components', function(msg) {
     if (paused)
 	return;
-    var newData = JSON.parse(msg.data);
+    var newData = _.omit(msg.data.new_val, 'id');
     // console.log('parsed', newData);
     var newDataSize = _.size(newData);
     if (newDataSize > maxNodesToProcess) {
