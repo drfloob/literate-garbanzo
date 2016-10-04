@@ -12,3 +12,4 @@ __pycache__/
 4.ui-server/ui.server.egg-info
 4.ui-server/include
 4.ui-server/dist
+/errors/
