@@ -130,6 +130,21 @@ peg sshcmd-cluster literate-garbanzo "sudo rethinkdb proxy --config-file /etc/re
 ```
 
 
+## Spinning up producers
+
+```bash
+peg up 0.ec2-setup/peg/producers/producers.yml
+```
+
+When EIP associated:
+
+```bash
+peg fetch literate-garbanzo-producers
+peg install literate-garbanzo-producers ssh
+peg install literate-garbanzo-producers aws
+```
+
+
 
 ## Loading up Network Pulse code
 
@@ -169,6 +184,15 @@ peg scp to-rem literate-garbanzo 3 1.mock-firehose/src/main/resources/hose.prope
 peg scp to-rem literate-garbanzo 3 1.mock-firehose/src/main/resources/kafka.properties /home/ubuntu
 peg scp to-rem literate-garbanzo 3 1.mock-firehose/src/main/resources/s3files.txt /home/ubuntu
 peg scp to-rem literate-garbanzo 3 1.mock-firehose/runFirehose.sh /home/ubuntu
+
+
+cd 1.mock-firehose
+tar -cvzf firehose.distrib.tar.gz target/firehose-0.0.1-jar-with-dependencies.jar src/main/resources/*.properties src/main/resources/s3files.txt runFirehose.sh
+peg scp to-rem literate-garbanzo-producers 1 firehose.distrib.tar.gz /home/ubuntu
+peg scp to-rem literate-garbanzo-producers 2 firehose.distrib.tar.gz /home/ubuntu
+peg sshcmd-cluster literate-garbanzo-producers "tar -xvzf firehose.distrib.tar.gz; mv target/* src/main/resources/* .; rm -r target src"
+
+cd ..
 
 peg sshcmd-node literate-garbanzo 4 "sudo pip install virtualenv; mkdir ~/flasky; cd flasky; virtualenv ."
 peg scp to-rem literate-garbanzo 4 4.ui-server/run.py /home/ubuntu/flasky
@@ -210,10 +234,17 @@ In four shells, connected to each node, run the following in screen sessions (or
 ./runVenturi.sh
 
 # on node 3
-./runFirehose.sh
+#./runFirehose.sh
 
 # on node 4
 cd flasky
 . bin/activate
 ./run.py
+
+# for producers
+peg sshcmd-cluster literate-garbanzo-producers "./runFirehose.sh& ./runFirehose.sh"
+# to stop production
+peg sshcmd-cluster literate-garbanzo-producers "pkill runFirehose.sh"
+
+
 ```
