@@ -6,6 +6,9 @@ import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
+import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.streaming.SimpleEdgeStream;
 import org.apache.flink.graph.streaming.example.util.DisjointSet;
@@ -25,7 +28,7 @@ import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import org.apache.flink.util.Collector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Properties;
-
+import org.apache.flink.api.java.tuple.Tuple2;
 
 public class StreamingJob {
 
@@ -46,7 +49,6 @@ public class StreamingJob {
 	DataStream<SkinnyGHRecord> skinnyStream = env.addSource(kafkaConsumer);
 
         SingleOutputStreamOperator<SkinnyGHRecord> sos =  skinnyStream.assignTimestampsAndWatermarks(new IngestionTimeExtractor<SkinnyGHRecord>());
-        // SingleOutputStreamOperator<SkinnyGHRecord> sos =  skinnyStream.assignTimestampsAndWatermarks(new GHEventTimeExtractor());
 
         SimpleEdgeStream<String, SkinnyGHRecord> ses = new SimpleEdgeStream<String, SkinnyGHRecord>(
 	    sos.map(
@@ -64,18 +66,36 @@ public class StreamingJob {
 	Long windowLength = Long.parseLong(flinkProps.getProperty("window.length"));
 	Long windowSlide = Long.parseLong(flinkProps.getProperty("window.slide"));
 	SlidingEventTimeWindows windowAssigner = SlidingEventTimeWindows.of(Time.milliseconds(windowLength), Time.milliseconds(windowSlide));
-        // DataStream<DisjointSet<String>> cc = ses.aggregate(new ConnectedComponents<String, SkinnyGHRecord>(windowAssigner));
         DataStream<DisjointSet<String>> cc = ses.aggregate(new WindowedConnectedComponents<String, SkinnyGHRecord>(windowAssigner));
 
+	// join windows
+	long parallelism = env.getParallelism();
 	final ObjectMapper mapper = new ObjectMapper();
-        cc.map(new MapFunction<DisjointSet<String>, String>() {
-		@Override
-		public String map(DisjointSet<String> value) throws Exception {
-		    return mapper.writeValueAsString(value.buildMap());
-		}
-	    })
+	cc.map(new DepartitionMapper())
+	    .keyBy(0)
+	    .countWindow(parallelism)
+	    .reduce(new ReduceFunction<Tuple2<Long, DisjointSet<String>>>() {
+		    @Override
+		    public Tuple2<Long, DisjointSet<String>> reduce(Tuple2<Long, DisjointSet<String>> t1, Tuple2<Long, DisjointSet<String>> t2) {
+			int count1 = t1.f1.getMatches().size();
+			int count2 = t2.f1.getMatches().size();
+			if (count1 <= count2) {
+			    t2.f1.merge(t1.f1);
+			    return new Tuple2<>(t1.f0, t2.f1);
+			}
+			t1.f1.merge(t2.f1);
+			return new Tuple2<>(t1.f0, t1.f1);
+		    }
+		})
+	    .map(new MapFunction<Tuple2<Long, DisjointSet<String>>, String>() {
+		    @Override
+		    public String map(Tuple2<Long, DisjointSet<String>> value) throws Exception {
+			return mapper.writeValueAsString(value.f1.buildMap());
+		    }
+		})
 	    .addSink(new FlinkKafkaProducer08<String>("gh_components", new SimpleStringSchema(), flinkProps));
-
+	
+	// TODO: is this necessary anymore, after adding job restarts?
 	while (true) {
         // execute program
 	    try {
@@ -107,4 +127,16 @@ public class StreamingJob {
 	}
     }
 
+    private static class DepartitionMapper extends RichMapFunction<DisjointSet<String>, Tuple2<Long, DisjointSet<String>>> {
+	private long windowId = 0L;
+	
+	public void open(Configuration parameters) {}
+
+	public Tuple2<Long, DisjointSet<String>> map(DisjointSet<String> value) {
+	    Tuple2<Long, DisjointSet<String>> ret = new Tuple2<>(windowId, value);
+	    windowId++;
+	    return ret;
+	}
+    }
+    
 }
