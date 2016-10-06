@@ -71,7 +71,12 @@ public class App
 		
 		    String toUser = PayloadParser.getToUser(r);
 		    String fromUser = PayloadParser.getFromUser(r);
-		    if (toUser == null || toUser.equals("") || fromUser == null || fromUser.equals("") || toUser.equals(fromUser)) {
+		    if (toUser == null || toUser.equals("") || fromUser == null || fromUser.equals("")) {
+			//System.err.println("users are blank or null: " + toUser + " ... " + fromUser);
+			return ret;
+		    }
+		    if (toUser.equals(fromUser)) {
+			// do nothing
 			return ret;
 		    }
 		    

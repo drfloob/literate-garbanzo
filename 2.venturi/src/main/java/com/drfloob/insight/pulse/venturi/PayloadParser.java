@@ -2,6 +2,7 @@ package com.drfloob.insight.pulse.venturi;
 
 import com.drfloob.insight.pulse.schema.gh.main.Root;
 import com.drfloob.insight.pulse.schema.gh.main.root.Actor;
+import com.drfloob.insight.pulse.schema.gh.main.root.Org;
 import com.drfloob.insight.pulse.schema.gh.main.root.Repo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,6 +62,8 @@ public class PayloadParser {
             return extractToUserFromPullRequest(rootNode);
         else if (type.equals("PullRequestReviewCommentEvent"))
             return extractToUserFromPullRequestReviewComment(rootNode);
+        else if (type.equals("PushEvent"))
+            return extractToUserFromPush(rootNode);
         else if (repoExtractSet.contains(type))
             return extractToUserFromPayloadRepo(rootNode);
 
@@ -104,6 +107,16 @@ public class PayloadParser {
     }
     private static String extractToUserFromPullRequestReviewComment(JsonNode rootNode) {
         return rootNode.path("pull_request").path("user").path("login").asText();
+    }
+    private static String extractToUserFromPush(JsonNode rootNode) {
+	// return the user who made the first commit
+	try {
+	    return rootNode.path("commits").get(0).path("author").path("name").asText();
+	} catch(Exception e) {
+	    // pure evil
+	}
+	
+	return extractToUserFromPayloadRepo(rootNode);
     }
     private static String extractToUserFromPayloadRepo(JsonNode rootNode) {
 	String repo = rootNode.path("repo").asText();
@@ -154,7 +167,7 @@ public class PayloadParser {
         else if (type.equals("IssuesEvent"))
             return extractFromUserFromIssues(rootNode);
         else if (type.equals("ForkEvent"))
-            return extractFromUserFromFork(rootNode);
+            return extractFromUserFromFork(rootNode, r);
         else if (type.equals("MemberEvent"))
             return extractFromUserFromMember(rootNode);
         else if (type.equals("PullRequestEvent"))
@@ -162,16 +175,51 @@ public class PayloadParser {
         else if (type.equals("PullRequestReviewCommentEvent"))
             return extractFromUserFromPullRequestReviewComment(rootNode);
         else if (repoExtractSet.contains(type))
-            return extractFromUserFromPayloadRepo(rootNode);
+            return extractFromUserFromPayloadRepo(rootNode, r);
 
         return null;
+    }
+
+    private static String from_parseOrg(Root r) {
+	Org o = r.getOrg();
+	if (o == null)
+	    return null;
+	CharSequence cl = o.getLogin();
+	if (cl == null)
+	    return null;
+	return cl.toString();
+    }
+
+    private static String from_parseRepoName(Root r) {
+	Repo rep = r.getRepo();
+	if (rep == null)
+	    return null;
+	CharSequence cl = rep.getName();
+	if (cl == null)
+	    return null;
+	String ret = cl.toString();
+	ret = ret.substring(0, ret.indexOf("/"));
+	return ret;
     }
 
     private static String extractFromUserFromComment(JsonNode rootNode) {
         return rootNode.path("comment").path("user").path("login").asText();
     }
-    private static String extractFromUserFromFork(JsonNode rootNode) {
-        return rootNode.path("sender").path("login").asText();
+    private static String extractFromUserFromFork(JsonNode rootNode, Root r) {
+        String ret = rootNode.path("sender").path("login").asText();
+	if (ret != null && ! ret.equals(""))
+	    return ret;
+
+	// try org
+	ret = from_parseOrg(r);
+	if (ret != null && ! ret.equals(""))
+	    return ret;
+
+	// try from repo name
+	ret = from_parseRepoName(r);
+	if (ret != null && ! ret.equals(""))
+	    return ret;
+	return null;
     }
     private static String extractFromUserFromIssueComment(JsonNode rootNode, Root r) {
         String ret = rootNode.path("comment").path("user").path("login").asText();
@@ -210,8 +258,18 @@ public class PayloadParser {
     private static String extractFromUserFromPullRequestReviewComment(JsonNode rootNode) {
         return rootNode.path("comment").path("user").path("login").asText();
     }
-    private static String extractFromUserFromPayloadRepo(JsonNode rootNode) {
-	return rootNode.path("actor").asText();
+    private static String extractFromUserFromPayloadRepo(JsonNode rootNode, Root r) {
+	String ret = rootNode.path("actor").asText();
+	if (ret != null && ! ret.equals(""))
+	    return ret;
+	Actor a = r.getActor();
+	if (a == null)
+	    return null;
+	CharSequence cl = a.getLogin();
+	if (cl == null)
+	    return null;
+	ret = cl.toString();
+	return ret;
     }
 
 
