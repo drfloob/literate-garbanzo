@@ -45,9 +45,17 @@ public class App
         final Injection<SkinnyGHRecord, byte[]> outByteToAvro = SpecificAvroCodecs.toBinary(ClassTag$.MODULE$.<SkinnyGHRecord>apply(SkinnyGHRecord.class));
 
         final SpecificDatumReader<Root> rootReader = new SpecificDatumReader<Root>(Root.class);
-
+	final int displayEveryNRecords = Integer.parseInt(venturiProps.getProperty("display.every", "10000"));
+	
         stream.flatMapValues(new ValueMapper<byte[], Iterable<byte[]>>() {
+		private Long totalCount = 0L;
+		private Long sentCount = 0L;
+	
 		public Iterable<byte[]> apply(byte[] bytes) {
+		    totalCount++;
+		    if (totalCount % 10000 == 0) {
+			System.out.println("  " + sentCount + "/" + totalCount + " (" + sentCount/(double)totalCount+"%)");
+		    }
 		    ArrayList<byte[]> ret = new ArrayList<byte[]>();
 
 		    BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
@@ -84,6 +92,8 @@ public class App
                         .build();
 		    ret.add(outByteToAvro.apply(skinny));
 		    // System.out.println("Processed record: " + skinny);
+		    sentCount++;
+
 		    return ret;
 		}
 	    }).to(serdeByte, serdeByte, venturiProps.getProperty("gh_skinny_topic"));
