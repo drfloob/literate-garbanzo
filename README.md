@@ -1,6 +1,8 @@
-# Network Pulse
+# [Network Pulse][demo]
 
-A distributed, fault-tolerant big data pipeline that performs graph analysis over unbounded data streams. [drfloob.com/pulse](https://drfloob.com/pulse)
+A distributed, fault-tolerant big data pipeline that performs graph analysis over unbounded data streams.
+
+
 
 ## Index
 
@@ -8,7 +10,12 @@ A distributed, fault-tolerant big data pipeline that performs graph analysis ove
 2. [The Pipeline](README.md#2-the-pipeline)
 3. [Performance](README.md#3-performance)
 
+
+
+
 ## 1. Introduction
+
+
 
 
 
@@ -16,7 +23,14 @@ A distributed, fault-tolerant big data pipeline that performs graph analysis ove
 
 
 
+
+
 ## 3. Performance
 
 
 
+
+
+
+[demo]: https://drfloob.com/pulse
+[slides]: https://drfloob.com/pulse/slides
