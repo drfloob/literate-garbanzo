@@ -27,7 +27,12 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer08;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import org.apache.flink.util.Collector;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Iterator;
 import org.apache.flink.api.java.tuple.Tuple2;
 
 public class StreamingJob {
@@ -90,20 +95,23 @@ public class StreamingJob {
 	    .map(new MapFunction<Tuple2<Long, DisjointSet<String>>, String>() {
 		    @Override
 		    public String map(Tuple2<Long, DisjointSet<String>> value) throws Exception {
-			return mapper.writeValueAsString(value.f1.buildMap());
+			Map<String, Object> ret = annotateAndFilterCC(value.f1);
+			return mapper.writeValueAsString(ret);
 		    }
 		})
 	    .addSink(new FlinkKafkaProducer08<String>("gh_components", new SimpleStringSchema(), flinkProps));
 	
-	// TODO: is this necessary anymore, after adding job restarts?
-	while (true) {
-        // execute program
-	    try {
-		env.execute("Flink Streaming Connected Components");
-	    } catch (Exception e) {
-		e.printStackTrace();
-	    }
-	}
+	// // TODO: is this necessary anymore, after adding job restarts?
+	// while (true) {
+        // // execute program
+	//     try {
+
+	env.execute("Flink Streaming Connected Components");
+
+	//     } catch (Exception e) {
+	// 	e.printStackTrace();
+	//     }
+	// }
 	    
     }
 
@@ -137,6 +145,35 @@ public class StreamingJob {
 	    windowId++;
 	    return ret;
 	}
+    }
+
+
+    private static Map<String, Object> annotateAndFilterCC(DisjointSet<String> set) {
+	HashMap<String, Object> ret = new HashMap<>();
+	Map<String, List<String>> setMap = set.buildMap();
+	HashMap<Integer, Integer> counts = new HashMap<>();
+
+	Iterator it = setMap.entrySet().iterator();
+	while (it.hasNext()) {
+	    Map.Entry<String, List<String>> pair = (Map.Entry<String, List<String>>)it.next();
+
+	    // record the size of the cluster
+	    Integer size = pair.getValue().size();
+	    if (counts.containsKey(size)) {
+		counts.put(size, counts.get(size)+1);
+	    } else {
+		counts.put(size, 1);
+	    }
+	    
+	    // remove it if it's a 2-person cluster
+	    if (size <= 2) {
+		it.remove();
+	    }
+	}
+
+	ret.put("counts", counts);
+	ret.put("clusters", setMap);
+	return ret;
     }
     
 }

@@ -1,7 +1,7 @@
 var socket = io('http://' + document.domain + ':' + location.port);
 
 var paused = false;
-var maxNodesToProcess = 2000;
+var maxNodesToProcess = 5000;
 var displayedSize = 0;
 var minDisplayedSizeForDemo = 25;
 
@@ -13,20 +13,20 @@ socket.on('connect', function() {
 socket.on('components', function(msg) {
     if (paused && displayedSize >= minDisplayedSizeForDemo)
 	return;
-    var newData = _.omit(msg.data.new_val, 'id');
-    // console.log('parsed', newData);
-    var newDataSize = _.size(newData);
+    var newData = msg.data.new_val;
+
+    // Note: summing the counts via reduce may be more efficient
+    var newDataSize = _.size(newData.clusters);
+    
     if (newDataSize > maxNodesToProcess) {
 	console.log("Nope! too much to do", newDataSize);
 	return;
     }
-    filteredKeys = _.filter(_.keys(newData), function(k) { return newData[k].length > 2; });
-    filteredData = _.pick(newData, filteredKeys);
-    // console.log('filtered', filteredData);
 
-    displayedSize = _.size(filteredData);
-    updatePulseGraph(filteredData);
-    updatePlot(newData);
+    
+    displayedSize = newDataSize;
+    updatePulseGraph(newData.clusters);
+    updatePlot(newData.counts);
 });
 
 

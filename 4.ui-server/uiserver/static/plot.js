@@ -13,7 +13,7 @@ function makePlotData(arr) {
 var plotData = makePlotData([0,0,0,0]);
 
 var plotlyLayout = {
-    xaxis: {range: [0,1500]},
+    xaxis: {range: [0,350]},
     font: {
 	family: 'Consolas, Courier New, monospace',
 	size: 18
@@ -30,21 +30,17 @@ Plotly.newPlot('barChart', plotData, plotlyLayout);
 
 function updatePlot(data) {
     // console.log('updatePlot: data: ', data);
-    var counts = _.reduce(data, function(agg, one) {
-	var len = _.size(_.filter(one, function(e) {return e != null && e != "" && (!_.isNumber(e) || !isNaN(e))}))
-	var idx = 0;
-	if (len == 2)
-	    idx = 0;
-	else if (len <= 4)
-	    idx = 1;
-	else if (len <= 9)
-	    idx = 2;
+    var counts = [0,0,0,0];
+    _.each(data, function(k, v, list) {
+	if (k <= 2)
+	    counts[0] += parseInt(v);
+	else if (k <= 4)
+	    counts[1] += parseInt(v);
+	else if (k <= 9)
+	    counts[2] += parseInt(v);
 	else
-	    idx = 3;
-	
-	agg[idx]++;
-	return agg;
-    }, [0,0,0,0]);
-    // console.log('counts', counts);
+	    counts[3] += parseInt(v);
+    });
+
     Plotly.newPlot('barChart', makePlotData(counts), plotlyLayout);
 }
