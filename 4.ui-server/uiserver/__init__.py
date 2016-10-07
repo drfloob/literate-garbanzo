@@ -11,7 +11,7 @@ def bg_rethink():
     ccCursor = r.table("clustered_components").changes().run()
     for cc in ccCursor:
         socketio.emit('components', {'data': cc}, json=True)
-        socketio.sleep(0.1)
+        socketio.sleep(0.169)
 
 thread = None
 @socketio.on('connect')

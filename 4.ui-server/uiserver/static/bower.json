@@ -17,6 +17,8 @@
   ],
   "dependencies": {
     "sigma": "^1.1.0",
-    "color-hash": "^1.0.3"
+    "color-hash": "^1.0.3",
+    "bootstrap": "*",
+    "bootstrap-switch": "^3.3.2"
   }
 }

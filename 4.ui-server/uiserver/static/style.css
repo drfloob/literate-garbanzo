@@ -1,12 +1,10 @@
 #sigma_container {
-    width: 75%;
-    height: 500px;
+    width: 100%;
+    height: 550px;
     border: 1px solid #ccc;
-    float: left;
+    margin: 5px 10px 5px 0;
 }
 
 #barChart {
-    width: 22%;
-    float: left;
 }
 

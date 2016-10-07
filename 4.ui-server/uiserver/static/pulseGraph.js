@@ -25,19 +25,15 @@ function resetZoom() {
 	    y: s.renderers[0].height/2
 	}, {duration: 400}
     );
-    // s.camera.goTo({
-    // 	x: s.renderers[0].width/2,
-    // 	y: s.renderers[0].height/2,
-    // 	ratio: 1})
 }
 
 function nodeClicked(node) {
-    console.log('node', node);
     var neighborhood = s.graph.neighborhood(node.data.node.masterNode);
-    console.log("neighborhood.nodes", neighborhood.nodes);
     var namesArray = _.map(neighborhood.nodes, function(n) { return n.id;});
-    console.log('namesArray', namesArray);
-    alert(JSON.stringify(namesArray, null, 2));
+    // console.log('namesArray', namesArray);
+    // alert(JSON.stringify(namesArray, null, 2));
+    $('#clusterModal .modal-body').text(JSON.stringify(namesArray, null, 4));
+    $('#clusterModal').modal();
 }
 
 s.bind("clickNode", nodeClicked);

@@ -13,7 +13,7 @@ function makePlotData(arr) {
 var plotData = makePlotData([0,0,0,0]);
 
 var plotlyLayout = {
-    xaxis: {range: [0,350]},
+    xaxis: {range: [0, 250]},
     font: {
 	family: 'Consolas, Courier New, monospace',
 	size: 18

@@ -1,15 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+    <link rel="stylesheet" href="static/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="static/bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" />
     <link rel="stylesheet" href="static/style.css" />
+    
   </head>
   <body>
-    <button onclick="togglePause(); return false;">Toggle Pause</button>
-    <button onclick="resetZoom(); return false;">Reset Zoom and Center</button>
-    <div id="sigma_container"></div>
-    <div id="barChart"></div>
-  </body>
+    <nav class="navbar navbar-inverse navbar-static-top">
+      <div class="container">
+	<div class="navbar-header">
+	  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	    <span class="sr-only">Toggle navigation</span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	  </button>
+	  <a class="navbar-brand" href="#">Network Pulse</a>
+	</div>
+	<div id="navbar" class="collapse navbar-collapse">
+	  <ul class="nav navbar-nav">
+	    <li class="active"><a href="https://github.com/drfloob/literate-garbanzo">Source</a></li>
+	    <li><a href="#about">About</a></li>
+	    <li><a href="#contact">Contact</a></li>
+	  </ul>
+	</div><!--/.nav-collapse -->
+      </div>
+    </nav>
 
+    <div class="container-fluid">
+      <div class="row">
+	<div class="col-xs-12 col-md-9">
+	  <div id="sigma_container"></div>
+	</div>
+	<div class="col-xs-12 col-md-3">
+	  <div class="row">
+	    <div class="col-sm-12">
+	      <input type="checkbox" name="pause-button" data-off-text="Pause" data-on-text="Resume" data-label-width="0" />
+	      <button class="btn btn-default" onclick="resetZoom(); return false;">Reset Zoom and Center</button>
+	    </div>
+	    <div class="col-sm-12">
+	      <div id="barChart"></div>
+	    </div>
+	  </div><!-- /.row - inner -->
+	</div><!-- / right column -->
+      </div><!-- /.row -->
+    </div><!-- /.container -->
+
+
+    <div id="clusterModal" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+	<div class="modal-content">
+	  <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	    <h4 class="modal-title">Cluster Group</h4>
+	  </div>
+	  <div class="modal-body">
+	    <p>One fine body&hellip;</p>
+	  </div>
+	  <div class="modal-footer">
+	    <button type="button" class="btn btn-default" data-dismiss="modal">Done</button>
+	  </div>
+	</div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+  </body>
+  
+  <!-- bootstrap -->
+  <script src="static/bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="static/bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+
+  <!-- utils -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <script src="static/bower_components/color-hash/dist/color-hash.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.1.0/sigma.min.js"></script>
@@ -17,7 +83,10 @@
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
+  <!-- pulse -->
+  <script src="static/setup.js"></script>
   <script src="static/plot.js"></script>
   <script src="static/pulseGraph.js"></script>
   <script src="static/socketwork.js"></script>
+
 </html>

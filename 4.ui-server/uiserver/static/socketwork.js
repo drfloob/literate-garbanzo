@@ -1,6 +1,5 @@
 var socket = io('http://' + document.domain + ':' + location.port);
 
-var paused = false;
 var maxNodesToProcess = 5000;
 var displayedSize = 0;
 var minDisplayedSizeForDemo = 25;
@@ -33,7 +32,3 @@ socket.on('components', function(msg) {
 socket.on('error', function(err) {
     console.log("error returned: ", err);
 });
-
-function togglePause() {
-    paused = !paused;
-}
