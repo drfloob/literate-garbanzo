@@ -2,6 +2,7 @@ var socket = io('http://' + document.domain + ':' + location.port);
 
 var maxNodesToProcess = 5000;
 var displayedSize = 0;
+var lastData;
 var minDisplayedSizeForDemo = 25;
 
 socket.on('connect', function() {
@@ -21,11 +22,16 @@ socket.on('components', function(msg) {
 	console.log("Nope! too much to do", newDataSize);
 	return;
     }
-
     
     displayedSize = newDataSize;
+    lastData = newData;
+    
     updatePulseGraph(newData.clusters);
-    updatePlot(newData.counts);
+    if (!isMobile.any) {
+	$('#barChart').show();
+	$('#mobile-optimized-barchart').hide();
+	updatePlot(newData.counts);
+    }
 });
 
 

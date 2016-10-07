@@ -21,6 +21,7 @@ function resetZoom() {
 	s.camera,
 	{
 	    ratio: 1,
+	    angle: 0,
 	    x: s.renderers[0].width/2,
 	    y: s.renderers[0].height/2
 	}, {duration: 400}

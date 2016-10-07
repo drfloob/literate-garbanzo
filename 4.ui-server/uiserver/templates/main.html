@@ -43,6 +43,7 @@
 	      <button class="btn btn-default" onclick="resetZoom(); return false;">Reset Zoom and Center</button>
 	    </div>
 	    <div class="col-sm-12">
+	      <p id="mobile-optimized-barchart">Mobile experience optimized: Pause the stream to view a bar chart of cluster distribution</p>
 	      <div id="barChart"></div>
 	    </div>
 	  </div><!-- /.row - inner -->
@@ -82,7 +83,8 @@
   <script src="static/sigma.plugins.neighborhoods.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
+  <script src="static/bower_components/isMobile/isMobile.min.js"></script>
+  
   <!-- pulse -->
   <script src="static/setup.js"></script>
   <script src="static/plot.js"></script>
