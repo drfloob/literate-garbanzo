@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * Created by aj on 9/20/16.
@@ -85,12 +87,9 @@ public class PayloadParser {
 		return ret;
 	}
 	// 2013 from repo url
-	retcl = r.getRepo().getUrl();
-	if (retcl != null) {
-	    ret = retcl.toString();
-	    if (ret != null && ! ret.equals(""))
-		return ret;
-	}
+	ret = getUserFromURL(r);
+	if (ret != null && ! ret.equals(""))
+	    return ret;
 	return null;
 	
     }
@@ -143,12 +142,9 @@ public class PayloadParser {
 		return ret;
 	}
 	// 2013 from repo url
-	retcl = r.getRepo().getUrl();
-	if (retcl != null) {
-	    ret = retcl.toString();
-	    if (ret != null && ! ret.equals(""))
-		return ret;
-	}
+	ret = getUserFromURL(r);
+	if (ret != null && ! ret.equals(""))
+	    return ret;
 	
 	return extractToUserFromPayloadRepo(rootNode);
     }
@@ -382,5 +378,20 @@ public class PayloadParser {
 	if (url == null)
 	    return null;
         return url.toString();
+    }
+
+
+    private static String getUserFromURL(Root r) {
+	String ret = null;
+	CharSequence retcl = r.getRepo().getUrl();
+	if (retcl != null) {
+	    ret = retcl.toString();
+	    Pattern urlNameMatcher = Pattern.compile("^.*://[^/]*github.*/(.*)/.*$");
+	    Matcher matcher = urlNameMatcher.matcher(ret);
+	    if (matcher.matches()) {
+		return matcher.group(1);
+	    }
+	}
+	return ret;
     }
 }
