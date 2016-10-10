@@ -54,7 +54,7 @@ public class App
 		public Iterable<byte[]> apply(byte[] bytes) {
 		    totalCount++;
 		    if (totalCount % 10000 == 0) {
-			System.out.println("  " + sentCount + "/" + totalCount + " (" + sentCount/(double)totalCount+"%)");
+			System.out.println("  " + sentCount + "/" + totalCount + " (" + (sentCount/(double)totalCount)*100+"%)");
 		    }
 		    ArrayList<byte[]> ret = new ArrayList<byte[]>();
 
@@ -72,11 +72,13 @@ public class App
 		    String toUser = PayloadParser.getToUser(r);
 		    String fromUser = PayloadParser.getFromUser(r);
 		    if (toUser == null || toUser.equals("") || fromUser == null || fromUser.equals("")) {
-			//System.err.println("users are blank or null: " + toUser + " ... " + fromUser);
+			// System.err.println("users are blank or null: " + toUser + " ... " + fromUser);
+			// System.err.println(r);
 			return ret;
 		    }
 		    if (toUser.equals(fromUser)) {
 			// do nothing
+			// System.err.println("Same user, doing nothing");
 			return ret;
 		    }
 		    

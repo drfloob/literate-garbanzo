@@ -55,7 +55,7 @@ public class PayloadParser {
         else if (issuesSet.contains(type))
             return extractToUserFromIssueComment(rootNode);
         else if (type.equals("ForkEvent")) // todo?
-            return extractToUserFromFork(rootNode);
+            return extractToUserFromFork(rootNode, r);
         else if (type.equals("MemberEvent"))
             return extractToUserFromMember(rootNode);
         else if (type.equals("PullRequestEvent"))
@@ -63,7 +63,7 @@ public class PayloadParser {
         else if (type.equals("PullRequestReviewCommentEvent"))
             return extractToUserFromPullRequestReviewComment(rootNode);
         else if (type.equals("PushEvent"))
-            return extractToUserFromPush(rootNode);
+            return extractToUserFromPush(rootNode, r);
         else if (repoExtractSet.contains(type))
             return extractToUserFromPayloadRepo(rootNode);
 
@@ -73,8 +73,26 @@ public class PayloadParser {
     private static String extractToUserFromComment(JsonNode rootNode) {
         return rootNode.path("comment").path("repository").path("owner").path("login").asText();
     }
-    private static String extractToUserFromFork(JsonNode rootNode) {
-        return rootNode.path("forkee").path("owner").path("login").asText();
+    private static String extractToUserFromFork(JsonNode rootNode, Root r) {
+	String ret = rootNode.path("forkee").path("owner").path("login").asText();
+	if (ret != null && ! ret.equals(""))
+	    return ret;
+	// 2013 org
+	CharSequence retcl = r.getOrg().getLogin();
+	if (retcl != null) {
+	    ret = retcl.toString();
+	    if (ret != null && ! ret.equals(""))
+		return ret;
+	}
+	// 2013 from repo url
+	retcl = r.getRepo().getUrl();
+	if (retcl != null) {
+	    ret = retcl.toString();
+	    if (ret != null && ! ret.equals(""))
+		return ret;
+	}
+	return null;
+	
     }
     private static String extractToUserFromIssueComment(JsonNode rootNode) {
         String ret = rootNode.path("issue").path("user").path("login").asText();
@@ -108,12 +126,28 @@ public class PayloadParser {
     private static String extractToUserFromPullRequestReviewComment(JsonNode rootNode) {
         return rootNode.path("pull_request").path("user").path("login").asText();
     }
-    private static String extractToUserFromPush(JsonNode rootNode) {
+    private static String extractToUserFromPush(JsonNode rootNode, Root r) {
 	// return the user who made the first commit
+	String ret;
 	try {
 	    return rootNode.path("commits").get(0).path("author").path("name").asText();
 	} catch(Exception e) {
 	    // pure evil
+	}
+	
+	// 2013 org
+	CharSequence retcl = r.getOrg().getLogin();
+	if (retcl != null) {
+	    ret = retcl.toString();
+	    if (ret != null && ! ret.equals(""))
+		return ret;
+	}
+	// 2013 from repo url
+	retcl = r.getRepo().getUrl();
+	if (retcl != null) {
+	    ret = retcl.toString();
+	    if (ret != null && ! ret.equals(""))
+		return ret;
 	}
 	
 	return extractToUserFromPayloadRepo(rootNode);
@@ -222,6 +256,14 @@ public class PayloadParser {
 	ret = from_parseRepoName(r);
 	if (ret != null && ! ret.equals(""))
 	    return ret;
+
+	// try actor
+	CharSequence retcl = r.getActor().getLogin();
+     	if (retcl != null) {
+	    ret = retcl.toString();
+	    if (ret != null && ! ret.equals(""))
+		return ret;
+	}
 	return null;
     }
     private static String extractFromUserFromIssueComment(JsonNode rootNode, Root r) {
