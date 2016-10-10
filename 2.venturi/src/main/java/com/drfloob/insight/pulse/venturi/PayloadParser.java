@@ -198,7 +198,10 @@ public class PayloadParser {
 	if (cl == null)
 	    return null;
 	String ret = cl.toString();
-	ret = ret.substring(0, ret.indexOf("/"));
+	int idx = ret.indexOf("/");
+	if (idx <= 0)
+	    return null;
+	ret = ret.substring(0, idx);
 	return ret;
     }
 
