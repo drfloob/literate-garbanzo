@@ -3,6 +3,7 @@
 ## Index
 
 1. [Introduction](README.md#1-introduction)
+ * 1.1 [Details](README.md#11-details)
 2. [The Pipeline](README.md#2-the-pipeline)
  * 2.1 [Overview](README.md#21-overview)
  * 2.2 [Mock Firehose](README.md#22-mock-firehose)
@@ -43,6 +44,29 @@ will serve as a building block towards the realization of these
 goals. I created Network Pulse in 3 weeks as part of the [Insight Data
 Engineering Fellowship Program][InsightDE].
 
+
+### 1.1 Details
+
+Network Pulse operates over GitHub Event data: rought 1.2 Terabytes of
+github event metadata, recorded from 2011 to 2015, encompassing 20+
+GitHub activities, from Commit Comments to Watch Events. For the
+purposes of this graph analysis, GitHub users are represented as nodes
+(or vertices) in the graph, and any sort of event between to users
+represents an edge between vertices.
+
+For example, when someone submits a pull request to someone else's
+repo, this is translated to a PullRequestEvent in the GitHub data, and
+represented as a connection between a user and the owner of the
+repository in Network Pulse's graph.
+
+A large fraction of the data is filtered out post-ingestion: roughly
+60% on average, but it fluctuates over the years. The primary reason
+events are filtered out is because they do not represent an
+interaction between two distinct users. For example, a PushEvent to my
+own repo does not involve two distinct users, so it is filtered out
+for the purposes of clustering users. These sorts of "cyclic" events
+appear to happen more with some kinds of events than with others, but
+there is a fair spread across the data.
 
 
 ## 2. The Pipeline
