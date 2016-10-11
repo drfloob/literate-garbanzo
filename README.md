@@ -47,7 +47,7 @@ Engineering Fellowship Program][InsightDE].
 
 ### 1.1 Details
 
-Network Pulse operates over GitHub Event data: rought 1.2 Terabytes of
+Network Pulse operates over GitHub Event data: roughly 1.2 Terabytes of
 github event metadata, recorded from 2011 to 2015, encompassing 20+
 GitHub activities, from Commit Comments to Watch Events. For the
 purposes of this graph analysis, GitHub users are represented as nodes
