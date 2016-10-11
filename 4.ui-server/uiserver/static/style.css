@@ -11,3 +11,7 @@
 .modal-body .row {
     text-align: center;
 }
+
+.modal-body {
+    font-size: 16pt;
+}

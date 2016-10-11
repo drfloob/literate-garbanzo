@@ -33,7 +33,8 @@ function nodeClicked(node) {
     var namesArray = _.map(neighborhood.nodes, function(n) { return n.id;});
     // console.log('namesArray', namesArray);
     // alert(JSON.stringify(namesArray, null, 2));
-    $('#clusterModal .modal-body').text(JSON.stringify(namesArray, null, 4));
+    
+    $('#clusterModal .modal-body').html("<ul>" + _.map(namesArray, function(n) { return "<li>"+n+"</li>";}).join("") + "</ul>");
     $('#clusterModal').modal();
 }
 
