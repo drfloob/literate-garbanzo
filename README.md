@@ -71,14 +71,14 @@ complaint. There are 9 servers in total:
  * 2x Producers, which operate the mock firehose
  * 4x Kafka / Flink nodes, the workhorses of the pipeline
 
-Originally prototyped 100% multitenant, as I opted to test the limits
-of this system before separating technologies, and I was quite happy
-with the performance. This fairly simple setup can process 8 years
-worth of GitHub Event data in about 7 hours, or roughly 2.5 Terabytes
-in 7 hours. The primary downside to a multitenant setup is the
-overhead of a more complicated recovery situation, but for the sake of
-this prototype, I felt it was worth acknowledging that drawback and
-moving on.
+Originally prototyped 100% multitenant, I opted to test the limits of
+this system before separating technologies, and I was quite happy with
+the performance. This fairly simple setup can process 8 years worth of
+GitHub Event data in about 7 hours, or roughly 2.5 Terabytes in 7
+hours. The primary downside to a multitenant setup is the overhead of
+a more complicated recovery situation, but for the sake of this
+prototype, I felt it was worth acknowledging that drawback and moving
+on.
 
 The two most likely bottlenecks (venturi and flinkCC) are horizontally
 scalable (via Kafka consumer groups and Flink parallelism,
