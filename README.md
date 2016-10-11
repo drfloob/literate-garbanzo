@@ -1,8 +1,5 @@
 # [Network Pulse][demo]
 
-A distributed, fault-tolerant big data pipeline that performs graph analysis over unbounded data streams.
-
-
 
 ## Index
 
@@ -15,19 +12,47 @@ A distributed, fault-tolerant big data pipeline that performs graph analysis ove
 
 ## 1. Introduction
 
+Think Facebook and Linkedin. These are giant networks, growing by the
+minute, and they play a key role in many of our lives. It's been the
+case that if you want to do something interesting on the data that
+drives these networks, you have to round up all your Petabytes in one
+go and process it all over hours, if not days!
 
+**Network Pulse is a distributed, fault-tolerant big data pipeline
+that performs graph analysis over unbounded data streams. Streaming
+graph analysis at the pace of change.** Its goal is to find clusters
+of people who interact with each other, as they interact.
+
+With this information, we can find who the most influential people are
+as they develop their influence. We can recommend new connections when
+the connections are most relevant. We can predict who would most
+likely bridge two separate groups, and use that information to
+strengthen a community when the momentum of interaction is at its
+peak.
 
 
 
 ## 2. The Pipeline
 
+### Overview
+
+### The Mock Firehose
+
+### Venturi
+
+### Flink Connected Components
+
+### RethinkDB
+
+### The UI
 
 
 
 
 ## 3. Performance
 
-
+At 20,000 events per second, Network Pulse chugs along without
+complaint. 
 
 
 
