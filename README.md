@@ -5,7 +5,12 @@
 
 1. [Introduction](README.md#1-introduction)
 2. [The Pipeline](README.md#2-the-pipeline)
- * 2.1 [Overview](README.md#2.1-overview)
+ * 2.1 [Overview](README.md#21-overview)
+ * 2.2 [Mock Firehose](README.md#22-mock-firehose)
+ * 2.3 [Venturi](README.md#23-venturi)
+ * 2.4 [Flink Connected Components](README.md#24-flink-connected-components)
+ * 2.5 [RethinkDB](README.md#25-rethinkdb)
+ * 2.6 [UI](README.md#26-ui)
 3. [Performance](README.md#3-performance)
 
 
@@ -37,7 +42,7 @@ peak.
 
 ### 2.1 Overview
 
-### 2.2 The Mock Firehose
+### 2.2 Mock Firehose
 
 ### 2.3 Venturi
 
@@ -45,7 +50,7 @@ peak.
 
 ### 2.5 RethinkDB
 
-### 2.6 The UI
+### 2.6 UI
 
 
 
