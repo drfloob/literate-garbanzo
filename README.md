@@ -47,12 +47,19 @@ Engineering Fellowship Program][InsightDE].
 
 ### 1.1 Details
 
-Network Pulse operates over GitHub Event data: roughly 1.2 Terabytes of
+Network Pulse operates over [GitHub's Archive of Event data][gharchive]: roughly 1.2 Terabytes of
 github event metadata, recorded from 2011 to 2015, encompassing 20+
-GitHub activities, from Commit Comments to Watch Events. For the
-purposes of this graph analysis, GitHub users are represented as nodes
-(or vertices) in the graph, and any sort of event between to users
-represents an edge between vertices.
+GitHub activities, from Commit Comments to Watch Events.
+
+For the purposes of this graph analysis, GitHub users are represented
+as nodes (or vertices) in the graph ...
+
+![Users are Nodes](res/users_are_nodes.jpg)
+
+... and any sort of event between to users is represented as an edge
+between vertices.
+
+![Events are Edges](res/events_are_edges.jpg)
 
 For example, when someone submits a pull request to someone else's
 repo, this is translated to a PullRequestEvent in the GitHub data, and
@@ -114,3 +121,4 @@ look forward to watching (and helping) Flink mature.
 [demo]: https://drfloob.com/pulse
 [slides]: https://drfloob.com/pulse/slides
 [InsightDE]: http://insightdataengineering.com/
+[gharchive]: https://www.githubarchive.org/
