@@ -2,9 +2,9 @@
 
 ## tl;dr:
 
- * ~~5 Minute Video Presentation~~
  * [Slides][slides]
  * [Live Demo][demo]
+ * ~~5 Minute Video Presentation~~
  * ~~Demo Video~~
 
 ## Index
