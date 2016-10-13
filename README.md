@@ -1,4 +1,11 @@
-# [Network Pulse][demo]
+# Network Pulse
+
+## tl;dr:
+
+ * ~~5 Minute Video Presentation~~
+ * [Slides][slides]
+ * [Live Demo][demo]
+ * ~~Demo Video~~
 
 ## Index
 
@@ -19,17 +26,17 @@
 
 ## 1. Introduction
 
-Think: Facebook and Linkedin. These are giant networks, growing by the
-second, and they play a key role in many of our lives. If you want to
-do something interesting with the data that drives these networks,
-until recently, you'd have to round up all your Petabytes and process
-it all at once, over hours to days.
+Think: Facebook and Linkedin. These are giant networks of people,
+growing by the second, and they play a key role in many of our
+lives. If you want to do something interesting with the data that
+drives these networks, until recently, you'd have to round up your
+Petabytes of data and process it all at once, over hours to days.
 
 **Network Pulse is a distributed, fault-tolerant big data pipeline
-that performs graph analysis over unbounded data streams.** *Streaming
-graph analysis at the pace of change.* Its goal is to find and outline
-clusters of people interacting with each other, as the interactions
-happen.
+that performs graph analysis over unbounded data streams.** *It does
+streaming graph analysis at the pace of change.* Its goal is to find
+and outline clusters of people interacting with each other, as the
+interactions happen.
 
  * With this information, we could find who the most influential people
 are *as they develop their influence*.
@@ -48,9 +55,9 @@ Engineering Fellowship Program][InsightDE].
 
 ### 1.1 Project Details
 
-The Network Pulse demo is set up to operate over [GitHub's Archive of
-Event data][gharchive]: roughly 1.2 Terabytes of github event
-metadata, recorded from 2011 to 2015, encompassing 20+ GitHub
+The [Network Pulse demo][demo] is set up to operate over [GitHub's
+Archive of Event data][gharchive]: roughly 1.2 Terabytes of github
+event metadata, recorded from 2011 to 2015, encompassing 20+ GitHub
 activities, from Commit Comments to Watch Events.
 
 For the purposes of this graph analysis, GitHub users are represented
@@ -113,16 +120,29 @@ feature). I then used Google's `gsutil` on a Google Cloud Compute
 instance to rsync those Avro files to my Amazon S3 bucket. This
 process took about 2 days.
 
-With the data available in S3, the last step was to create a process
-that could stream this data from S3 to produce independent messages
-into a Kafka topic. 
+With the data now available in S3, the last step was to create a
+process that could stream this data from S3 to produce independent
+messages into a Kafka topic. I did this in Java using the AWS SDK,
+Kafka's java libraries, Avro's java libraries, and Twitter's
+[bijection][bijection] tool for simpler deserialization.
 
 
 ### 2.2 Venturi
 
 [Source](2.venturi)
 
+The data needed for this clustering operation is quite a bit smaller
+than the data provided, so I created Venturi to serve as a parsing and
+filtering layer in the pipeline.
 
+The data went through a handful of schema changes over five years, so
+detecting and parsing the various schemas turned out to be one of the
+bigger challenges. The naive solution implemented here -- trying each
+possible parsing method after some rudimentary schema detection --
+turned out to be more performant than other pieces of the pipeline, so
+no real optimization was needed. But at scale, this tool would ripe
+for improvements. Namely: looking into formal grammars and Kafka
+consumer groups.
 
 About 55% of the data is filtered out post-ingestion. The primary
 reason is because many GitHub events are created by people working on
@@ -135,9 +155,44 @@ clustering users.
 
 ### 2.3 Flink Connected Components
 
+[Source](3.flinkCC)
+
+The engine of this pipeline is implement in Flink using the
+experimental [gelly-streaming][gelly-streaming]
+library. [Flink][flink] is an open source Kappa-architecture-esque
+tool primarily based on [Google's Dataflow Model][dataflow].
+
+Gelly-streaming already had a rolling connected components example
+using tumbling windows (incrementally updating global clusters in
+parallel as new data streams in). [My improvement][gscontrib] was to
+implement a global, non-rolling connected components algorithm over
+sliding windows (finding global clusters in parallel with overlapping
+windows to capture a sense of change, and discarding previous
+results). The original intent here was to capture the current state of
+the network, and use it as a context in which to evaluate large batch
+computation results. But I believe the concept is more powerful than
+that.
+
+The beauty of the connected components algorithm lies in the ability
+to split the incoming data randomly and uniformly across Flink nodes,
+which provides a great opportunity to scale this process
+horizontally. There are two stream processing steps in this algorithm
+at which a single node must process all the data flowing through, but
+they are not bottlenecks at any scale I was able to test; much of the
+heavy processing is done upstream in parallel.
+
+
+
 ### 2.4 UI
 
+[Source](4.ui-server)
+
+
+
+
 ### 2.5 RethinkDB
+
+[Source](5.kafkaRethink)
 
 
 
@@ -188,3 +243,8 @@ instructions can be found in the [DEPLOY][deploy] guide.
 [pegasus]: https://github.com/insightdatascience/pegasus
 [deploy]: DEPLOY.md
 [gibigquery]: https://bigquery.cloud.google.com/table/githubarchive:year.2011?pli=1
+[bijection]: https://github.com/twitter/bijection
+[gelly-streamgin]: https://github.com/vasia/gelly-streaming
+[flink]: https://flink.apache.org/
+[dataflow]: http://research.google.com/pubs/archive/43864.pdf
+[gscontrib]: https://github.com/vasia/gelly-streaming/pull/26
