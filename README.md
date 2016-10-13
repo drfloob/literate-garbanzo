@@ -1,6 +1,6 @@
 # Network Pulse
 
-## tl;dr:
+## tl;dr
 
  * [Slides][slides]
  * [Live Demo][demo]
@@ -29,12 +29,12 @@
 Think: Facebook and Linkedin. These are giant networks of people,
 growing by the second, and they play a key role in many of our
 lives. If you want to do something interesting with the data that
-drives these networks, until recently, you'd have to round up your
-Petabytes of data and process it all at once, over hours to days.
+drives these networks, until recently, you'd have to gather years of
+data and process it all at once, over hours to days.
 
 **Network Pulse is a distributed, fault-tolerant big data pipeline
-that performs graph analysis over unbounded data streams.** *It does
-streaming graph analysis at the pace of change.* Its goal is to find
+that performs graph analysis over unbounded data streams.** *It's
+streaming graph analysis at the pace of change.* The goal is to find
 and outline clusters of people interacting with each other, as the
 interactions happen.
 
@@ -89,7 +89,7 @@ additional project with cross-cutting concerns. Let's begin there.
 There are two types of Avro schemas in play:
 
  * the schemas extracted from GitHub's Archive data, and
- * the trimmed-down version Network Pulse works with
+ * the trimmed-down version Network Pulse uses
 
 The GitHub Archive schemas were extracted from the Avro source data;
 there are two because a schema change occurred in 2015. I also
@@ -312,7 +312,7 @@ the initial setup.
 [gharchive]: https://www.githubarchive.org/
 [pegasus]: https://github.com/insightdatascience/pegasus
 [deploy]: DEPLOY.md
-[gibigquery]: https://bigquery.cloud.google.com/table/githubarchive:year.2011?pli=1
+[ghbigquery]: https://bigquery.cloud.google.com/table/githubarchive:year.2011?pli=1
 [bijection]: https://github.com/twitter/bijection
 [gelly-streamgin]: https://github.com/vasia/gelly-streaming
 [flink]: https://flink.apache.org/
