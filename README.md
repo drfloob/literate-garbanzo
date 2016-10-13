@@ -288,12 +288,14 @@ activity).
 
 The third example -- community building via potential influencers --
 would be solved with a combination of the previous examples, along
-with additional stream analysis component: determining the growth or
-recession of connection activity within the relevant groups, to
+with an additional stream analysis component: determining the growth
+or recession of connection activity within the relevant groups, to
 determine the best time to suggest a joining connection.
 
 
-<br clear="all" /> ## 5. Deployment
+<br clear="all" />
+
+## 5. Deployment
 
 See the [DEPLOY][deploy] guide.
 
