@@ -84,14 +84,18 @@ additional project with cross-cutting concerns. Let's begin there.
 
 ### 2.0 Avro Schema
 
-There are two Avro schemas in play:
+[Source](0.avro-schema)
 
- * the data that comes from GitHub's Archive, and
+There are two types of Avro schemas in play:
+
+ * the schemas extracted from GitHub's Archive data, and
  * the trimmed-down version Network Pulse works with
 
-The GitHub Archive schema was extracted from the Avro source data, and
-I designed the trimmed-down version to provide the minimum amount of
-information needed to accomplish the overarching goal.
+The GitHub Archive schemas were extracted from the Avro source data;
+there are two because a schema change occurred in 2015. I also
+designed the trimmed-down version of the event data schema to provide
+the minimum amount of information needed to accomplish the overarching
+goal.
 
 Both schemas were used to generate the Java Objects that are used for
 schema-specific serialization and deserialization of the event
@@ -106,11 +110,11 @@ and included via maven dependencies.
 
 [Source](1.mock-firehose)
 
-Since GitHub does not have an events firehose I could use for this
-project, I set about creating one of my own. I chose to maintain my
-source of truth in Amazon S3, and dial up the throughput using
-multiple independent EC2 nodes that stream from S3 into my Kafka
-ingestion endpoint.
+![Mock Firehose](res/mock_firehose.jpg) Since GitHub does not have an
+events firehose I could use for this project, I set about creating one
+of my own. I chose to maintain my source of truth in Amazon S3, and
+dial up the throughput using multiple independent EC2 nodes that
+stream from S3 into my Kafka ingestion endpoint.
 
 The initial setup was fairly tedious. The event data are provided
 across 5 [Google BigQuery][ghbigquery] tables. I exported this data in
