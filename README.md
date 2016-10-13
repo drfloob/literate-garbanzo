@@ -20,30 +20,31 @@
 ## 1. Introduction
 
 Think: Facebook and Linkedin. These are giant networks, growing by the
-second, and they play a key role in many of our lives. It's been the
-case that if you want to do something interesting on the data that
-drives these networks, you have to round up all your Petabytes in one
-go and process it all over hours, if not days!
+second, and they play a key role in many of our lives. If you want to
+do something interesting with the data that drives these networks,
+until recently, you'd have to round up all your Petabytes and process
+it all at once, over hours to days.
 
 **Network Pulse is a distributed, fault-tolerant big data pipeline
-that performs graph analysis over unbounded data streams. Streaming
-graph analysis at the pace of change.** Its goal is to find clusters
-of people who interact with each other, as they interact.
+that performs graph analysis over unbounded data streams.** *Streaming
+graph analysis at the pace of change.* Its goal is to find clusters of
+people who interact with each other, as its happening.
 
-With this information, we can find who the most influential people are
-*as they develop their influence*.
+With this information, we could find who the most influential people
+are *as they develop their influence*.
 
-We can recommend new connections *when the connections are most
+We could recommend new connections *when the connections are most
 relevant*.
 
-We can predict who would most easily bridge two separate groups, and
-use that information to strengthen a community *when momentum is at its
-peak*.
+We could predict who would most easily bridge two separated groups,
+and use that information to strengthen a community *when momentum is
+at its peak*.
 
 Network Pulse is a powerful prototype; the kind of technology that
 will serve as a building block towards the realization of these
 goals. I created Network Pulse in 3 weeks as part of the [Insight Data
 Engineering Fellowship Program][InsightDE].
+
 
 
 ### 1.1 Project Details
@@ -80,7 +81,7 @@ clustering users.
 ![The Network Pulse Pipeline](res/pipeline.jpg)
 
 There are 5 independent sub-projects within the codebase, and one
-additional project with cross-cutting concerns.
+additional project with cross-cutting concerns. Let's begin there.
 
 ### 2.0 Avro Schema
 
@@ -97,9 +98,15 @@ Both schemas were used to generate the Java Objects that are used for
 schema-specific serialization and deserialization of the event
 byte-stream flowing through Kafka. More on that soon.
 
+Many of the sub-projects rely on these schemas, so the relevant code
+is broken out into its own sub-project, built as an independent jar,
+and included via maven dependencies.
+
 
 ### 2.1 Mock Firehose
 
+Since GitHub does not have an events firehose I could use for this
+project, I set about creating one of my own.
 
 
 ### 2.2 Venturi
