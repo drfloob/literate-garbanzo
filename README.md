@@ -31,8 +31,8 @@
 Think: Facebook and Linkedin. These are giant networks of people,
 growing by the second, and they play a key role in many of our
 lives. If you want to do something interesting with the data that
-drives these networks, until recently, you'd have to gather years of
-data and process it all at once, over hours to days.
+drives these networks, until recently, you'd have to gather all your
+years of data and process it over hours to days.
 
 **Network Pulse is a distributed, fault-tolerant big data pipeline
 that performs graph analysis over unbounded data streams.** *It's
