@@ -202,10 +202,11 @@ heavy processing is done upstream in parallel.
 The UI is a mobile-first [Bootstrap][bootstrap] web app, with
 visualizations built in [Sigma.js][sigma] and [Plotly][plot.ly], and
 server-push communications using [Socket.IO][socketio] (javascript
-client). This app is served by a Flask server that uses websocket
+client). This app is served by a Flask web server that uses websocket
 broadcast messages (socketio python) to push new data frames down to
-the browser clients. These data frames are being pushed to the Flask
-server via a [RethinkDB changefeed][changefeed].
+the browser clients. Flask recieves these new data frames via a
+[RethinkDB changefeed][changefeed], with a registered change listener
+that performs the previously mentioned broadcast.
 
 
 <br clear="all" />
@@ -216,12 +217,13 @@ server via a [RethinkDB changefeed][changefeed].
 [Source](5.kafkaRethink)
 
 I wanted to persist the windowed cluster data in a way that would
-allow many clients to subscribe to changes in this data in an
-efficient way. RethinkDB was designed well for this task. I created a
-cluster of three RethinkDB nodes with three partitions and two
-replications, to distribute the load, and provide some durability. I
-also installed RethinkDB Proxies on my "kafkaRethink" nodes (see
-below), which are designed to improve the cluster's efficiency.
+allow many clients to subscribe and view the stream of clusters in an
+efficient way, currently at about 8 frames per second. RethinkDB was
+designed well for this task. I created a cluster of three RethinkDB
+nodes with three partitions and two replications, to distribute the
+load, and provide some durability. I also installed RethinkDB Proxies
+on my "kafkaRethink" nodes (see below), which are designed to improve
+the cluster's overall efficiency.
 
 Unfortunately, I did not find a great way to connect Flink to
 RethinkDB in a durable way, as Flink is still a fairly young product
@@ -239,8 +241,8 @@ investment.
 <br clear="all" />
 ## 3. Performance
 
-At 20,000 events per second, Network Pulse chugs along without
-complaint. There are 9 servers in total:
+At 20,000 events ingested per second, Network Pulse chugs along
+without complaint. There are 9 servers in total:
 
  * 3x RethinkDB cluster, with 3 partitions and 2 replications each
  * 2x Producers, which operate the mock firehose
@@ -249,23 +251,49 @@ complaint. There are 9 servers in total:
 Originally prototyped 100% multitenant, I opted to test the limits of
 this system before separating technologies, and I was quite happy with
 the performance. This fairly simple setup can process 10 years worth
-of GitHub Event data in about 7 hours, or roughly 2.5 Terabytes in 7
-hours. The primary downside to a multitenant setup is the overhead of
-a more complicated recovery situation, but for the sake of this
-prototype, I felt it was worth acknowledging that drawback and moving
-on to cover the breadth of the problem.
+of GitHub Event data in about 7 hours; roughly 2.5 Terabytes in 7
+hours, or 8.5TB per day.
 
-The two most likely bottlenecks (venturi and flinkCC) are horizontally
-scalable (via Kafka consumer groups and Flink parallelism,
-respectively). I've been very impressed with both technologies, and I
-look forward to watching (and helping) Flink mature.
+The primary downside to a multitenant setup is the overhead of a more
+complicated recovery situation, but in the context of building this
+3-week prototype, I felt it was worth acknowledging that drawback and
+moving on to cover the breadth of the problem.
+
+The two most likely bottlenecks are venturi and flinkCC, since they
+perform the most processing on the most data, and this task is
+primarily CPU-bound. Both components are both horizontally scalable
+(via Kafka consumer groups and Flink parallelism, respectively). I've
+been very impressed with both technologies, and I look forward to
+watching (and helping) Flink mature.
 
 
 
 ## 4. Future Work
 
+<img align="right" src="res/minCut.jpg" />
 
-## 5. Deployment
+On its own, Network Pulse serves as a building block towards the
+construction of powerful analytics tools. One concrete use case I'd
+like to work on is implementing a [distributed Min-Cut/Max-Flow
+algorithm][mcmf] in Gelly-Streaming. This would solve the first use
+case outlined in the Introduction: finding influencers as they develop
+their influence.
+
+The second example in the introduction -- recommending new connections
+in a timely way -- would more likely be solved with batch components
+that calculate the long history of everyone's interactions, and a
+streaming pattern matching operation to establish a sense of
+timeliness (e.g. two people having similar temporal patterns of
+activity).
+
+The third example -- community building via potential influencers --
+would be solved with a combination of the previous examples, along
+with additional stream analysis component: determining the growth or
+recession of connection activity within the relevant groups, to
+determine the best time to suggest a joining connection.
+
+
+<br clear="all" /> ## 5. Deployment
 
 See the [DEPLOY][deploy] guide.
 
@@ -293,3 +321,4 @@ the initial setup.
 [plot.ly]: https://plot.ly/
 [socketio]: http://socket.io/
 [changefeed]: https://rethinkdb.com/docs/changefeeds/javascript/
+[mcmf]: https://github.com/vasia/gelly-streaming/issues/28
