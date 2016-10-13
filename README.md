@@ -143,16 +143,16 @@ The data needed for this clustering operation is quite a bit smaller
 than the data provided, so I created Venturi to serve as a parsing and
 filtering layer in the pipeline.
 
-The data went through a handful of schema changes over five years, so
-detecting and parsing the various schemas turned out to be one of the
-bigger challenges. The naive solution implemented here -- trying each
-possible parsing method after some rudimentary schema detection --
-turned out to be more performant than other pieces of the pipeline, so
-no real optimization was needed. But at scale, this tool would ripe
-for improvements. Namely: looking into formal grammars and Kafka
-consumer groups.
+The result is a Java process that acts as both a Kafka Consumer and
+Producer:
 
-About 55% of the data is filtered out post-ingestion. The primary
+ * ingesting the full GitHub Event record in Avro format from a Kafka topic,
+ * deserializing it,
+ * parsing out the relevant data (users, event-type, url, timestamp, etc.),
+ * creating a new skinny avro record, and
+ * producing a byte-stream-serialized version of it on a new Kafka topic.
+
+About 55% of the data is filtered out in this process. The primary
 reason is because many GitHub events are created by people working on
 their own repos, and don't represent a connection between distinct
 individuals. Events like these are filtered out for the purposes of
@@ -160,9 +160,10 @@ clustering users.
 
 
 
-
 <br clear="all" />
 ### 2.3 Flink Connected Components
+
+<img align="left" src="res/flinkCC.jpg" />
 
 [Source](3.flinkCC)
 
@@ -191,7 +192,7 @@ they are not bottlenecks at any scale I was able to test; much of the
 heavy processing is done upstream in parallel.
 
 
-
+<br clear="all" />
 ### 2.4 UI
 
 [Source](4.ui-server)
