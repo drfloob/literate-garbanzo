@@ -27,8 +27,9 @@ it all at once, over hours to days.
 
 **Network Pulse is a distributed, fault-tolerant big data pipeline
 that performs graph analysis over unbounded data streams.** *Streaming
-graph analysis at the pace of change.* Its goal is to find clusters of
-people who interact with each other, as its happening.
+graph analysis at the pace of change.* Its goal is to find and outline
+clusters of people interacting with each other, as the interactions
+happen.
 
  * With this information, we could find who the most influential people
 are *as they develop their influence*.
@@ -57,7 +58,7 @@ as nodes (or vertices) in the graph ...
 
 ![Users are Nodes](res/users_are_nodes.jpg)
 
-... and any sort of event between to users is represented as an edge
+... and any sort of event between two users is represented as an edge
 between vertices.
 
 ![Events are Edges](res/events_are_edges.jpg)
@@ -66,13 +67,6 @@ For example, when User A submits a pull request to User B's repo, this
 is translated to a PullRequestEvent in the GitHub data, and
 represented as a connection between users A and B in Network Pulse's
 graph.
-
-About 55% of the data is filtered out post-ingestion. The primary
-reason is because many GitHub events are created by people working on
-their own repos, and don't represent a connection between distinct
-individuals. Events like these are filtered out for the purposes of
-clustering users.
-
 
 ## 2. The Pipeline
 
@@ -103,11 +97,41 @@ and included via maven dependencies.
 
 ### 2.1 Mock Firehose
 
+[Source](1.mock-firehose)
+
 Since GitHub does not have an events firehose I could use for this
-project, I set about creating one of my own.
+project, I set about creating one of my own. I chose to maintain my
+source of truth in Amazon S3, and dial up the throughput using
+multiple independent EC2 nodes that stream from S3 into my Kafka
+ingestion endpoint.
+
+The initial setup was fairly tedious. The event data are provided
+across 5 [Google BigQuery][ghbigquery] tables. I exported this data in
+Avro format into google's cloud storage, which created just over 2000
+Avro bundles at roughly ~600MB each (a limitation of BigQuery's export
+feature). I then used Google's `gsutil` on a Google Cloud Compute
+instance to rsync those Avro files to my Amazon S3 bucket. This
+process took about 2 days.
+
+With the data available in S3, the last step was to create a process
+that could stream this data from S3 to produce independent messages
+into a Kafka topic. 
 
 
 ### 2.2 Venturi
+
+[Source](2.venturi)
+
+
+
+About 55% of the data is filtered out post-ingestion. The primary
+reason is because many GitHub events are created by people working on
+their own repos, and don't represent a connection between distinct
+individuals. Events like these are filtered out for the purposes of
+clustering users.
+
+
+
 
 ### 2.3 Flink Connected Components
 
@@ -163,3 +187,4 @@ instructions can be found in the [DEPLOY][deploy] guide.
 [gharchive]: https://www.githubarchive.org/
 [pegasus]: https://github.com/insightdatascience/pegasus
 [deploy]: DEPLOY.md
+[gibigquery]: https://bigquery.cloud.google.com/table/githubarchive:year.2011?pli=1
