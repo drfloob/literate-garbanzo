@@ -1,5 +1,7 @@
 # Network Pulse
 
+![Network Pulse - graph analysis at the pace of change](res/pulse.jpg)
+
 ## tl;dr
 
  * [Slides][slides]
@@ -16,7 +18,7 @@
  * 2.1 [Mock Firehose](README.md#21-mock-firehose)
  * 2.2 [Venturi](README.md#22-venturi)
  * 2.3 [Flink Connected Components](README.md#23-flink-connected-components)
- * 2.4 [UI](README.md#24-ui)
+ * 2.4 [UI Server](README.md#24-ui-server)
  * 2.5 [RethinkDB](README.md#25-rethinkdb)
 3. [Performance](README.md#3-performance)
 4. [Future Work](README.md#4-future-work)
@@ -180,26 +182,26 @@ sliding windows (finding global clusters in parallel with overlapping
 windows to capture a sense of change, and discarding previous
 results). The original intent here was to capture the current state of
 the network, and use it as a context in which to evaluate large batch
-computation results. But I believe the concept is more powerful than
-that.
+computation results. But I now believe the tool is more generally
+useful than that.
 
-The beauty of the connected components algorithm lies in the ability
-to split the incoming data randomly and uniformly across Flink nodes,
-which provides a great opportunity to scale this process
+The beauty of the distributed connected components algorithm lies in
+its ability to split the incoming data randomly and uniformly across
+Flink nodes, which provides a great opportunity to scale this process
 horizontally. There are two stream processing steps in this algorithm
 at which a single node must process all the data flowing through, but
 they are not bottlenecks at any scale I was able to test; much of the
-heavy processing is done upstream in parallel.
+heavy processing is done upstream and in parallel.
 
 
 <br clear="all" />
-### 2.4 UI
+### 2.4 UI Server
 
 <img align="right" src="res/uiserver.jpg" />
 
 [Source](4.ui-server)
 
-The UI is a mobile-first [Bootstrap][bootstrap] web app, with
+The UI is built as a mobile-first [Bootstrap][bootstrap] web app, with
 visualizations built in [Sigma.js][sigma] and [Plotly][plot.ly], and
 server-push communications using [Socket.IO][socketio] (javascript
 client). This app is served by a Flask web server that uses websocket
@@ -218,7 +220,7 @@ that performs the previously mentioned broadcast.
 
 I wanted to persist the windowed cluster data in a way that would
 allow many clients to subscribe and view the stream of clusters in an
-efficient way, currently at about 8 frames per second. RethinkDB was
+efficient way, currently at about 8 frames per second. [RethinkDB][rethink] was
 designed well for this task. I created a cluster of three RethinkDB
 nodes with three partitions and two replications, to distribute the
 load, and provide some durability. I also installed RethinkDB Proxies
@@ -261,7 +263,7 @@ moving on to cover the breadth of the problem.
 
 The two most likely bottlenecks are venturi and flinkCC, since they
 perform the most processing on the most data, and this task is
-primarily CPU-bound. Both components are both horizontally scalable
+primarily CPU-bound. Both components are horizontally scalable
 (via Kafka consumer groups and Flink parallelism, respectively). I've
 been very impressed with both technologies, and I look forward to
 watching (and helping) Flink mature.
@@ -273,18 +275,18 @@ watching (and helping) Flink mature.
 <img align="right" src="res/minCut.jpg" />
 
 On its own, Network Pulse serves as a building block towards the
-construction of powerful analytics tools. One concrete use case I'd
+construction of powerful analytical tools. One concrete use case I'd
 like to work on is implementing a [distributed Min-Cut/Max-Flow
 algorithm][mcmf] in Gelly-Streaming. This would solve the first use
 case outlined in the Introduction: finding influencers as they develop
 their influence.
 
 The second example in the introduction -- recommending new connections
-in a timely way -- would more likely be solved with batch components
-that calculate the long history of everyone's interactions, and a
-streaming pattern matching operation to establish a sense of
-timeliness (e.g. two people having similar temporal patterns of
-activity).
+in a timely way -- would likely be solved with a batch component that
+calculates the long history of everyone's interactions, and a
+streaming pattern matching component to establish a sense of
+timeliness and context in which to evaluate a recommendation
+opportunity.
 
 The third example -- community building via potential influencers --
 would be solved with a combination of the previous examples, along
@@ -324,3 +326,4 @@ the initial setup.
 [socketio]: http://socket.io/
 [changefeed]: https://rethinkdb.com/docs/changefeeds/javascript/
 [mcmf]: https://github.com/vasia/gelly-streaming/issues/28
+[rethink]: https://rethinkdb.com/
