@@ -110,11 +110,11 @@ and included via maven dependencies.
 
 [Source](1.mock-firehose)
 
-![Mock Firehose](res/mock_firehose.jpg) Since GitHub does not have an
-events firehose I could use for this project, I set about creating one
-of my own. I chose to maintain my source of truth in Amazon S3, and
-dial up the throughput using multiple independent EC2 nodes that
-stream from S3 into my Kafka ingestion endpoint.
+<img align="left" src="res/mock_firehose.jpg" /> Since GitHub does not
+have an events firehose I could use for this project, I set about
+creating one of my own. I chose to maintain my source of truth in
+Amazon S3, and dial up the throughput using multiple independent EC2
+nodes that stream from S3 into my Kafka ingestion endpoint.
 
 The initial setup was fairly tedious. The event data are provided
 across 5 [Google BigQuery][ghbigquery] tables. I exported this data in
