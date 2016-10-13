@@ -135,6 +135,8 @@ Kafka's java libraries, Avro's java libraries, and Twitter's
 <br clear="all" />
 ### 2.2 Venturi
 
+<img align="right" src="res/venturi.jpg" />
+
 [Source](2.venturi)
 
 The data needed for this clustering operation is quite a bit smaller
@@ -159,6 +161,7 @@ clustering users.
 
 
 
+<br clear="all" />
 ### 2.3 Flink Connected Components
 
 [Source](3.flinkCC)
