@@ -214,6 +214,8 @@ broadcast.
 <br clear="all" />
 ### 2.5 RethinkDB Persistence from Flink
 
+<img align="left" src="res/rethink.jpg" />
+
 [Source](5.kafkaRethink)
 
 I wanted to persist the windowed cluster data in a way that would
