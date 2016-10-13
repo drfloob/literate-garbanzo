@@ -94,10 +94,9 @@ There are two types of Avro schemas in play:
  * the trimmed-down version Network Pulse uses
 
 The GitHub Archive schemas were extracted from the Avro source data;
-there are two because a schema change occurred in 2015. I also
-designed the trimmed-down version of the event data schema to provide
-the minimum amount of information needed to accomplish the overarching
-goal.
+there are two because of a schema change in 2015. I also designed a
+trimmed-down version of the event data schema to provide the minimum
+amount of information needed to accomplish the overarching goal.
 
 Both schemas were used to generate the Java Objects that are used for
 schema-specific serialization and deserialization of the event
@@ -132,7 +131,7 @@ With the data now available in S3, the last step was to create a
 process that could stream this data from S3 to produce independent
 messages into a Kafka topic. I did this in Java using the AWS SDK,
 Kafka's java libraries, Avro's java libraries, and Twitter's
-[bijection][bijection] tool for simpler deserialization.
+[bijection][bijection] tool for (de)serialization.
 
 <br clear="all" />
 ### 2.2 Venturi
@@ -141,8 +140,8 @@ Kafka's java libraries, Avro's java libraries, and Twitter's
 
 [Source](2.venturi)
 
-The data needed for this clustering operation is significantly less
-than the size of the source data, so I created Venturi to serve as a
+The data required for this clustering operation is significantly less
+than the source data provides, so I created Venturi to serve as a
 parsing and filtering layer in the pipeline.
 
 The result is a Java process that acts as both a Kafka Consumer and
@@ -170,13 +169,13 @@ purposes of clustering users.
 [Source](3.flinkCC)
 
 The engine of this pipeline is implemented in Flink using the
-experimental [gelly-streaming][gelly-streaming]
+experimental [gelly-streaming][gelly-streaming] graph
 library. [Flink][flink] is an open source Kappa-architecture-esque
 tool primarily based on [Google's Dataflow Model][dataflow].
 
 Gelly-streaming already had a rolling connected components example
 using tumbling windows (incrementally updating global clusters in
-parallel as new data streams in). [My improvement][gscontrib] was to
+parallel as new data streams in). [My contribution][gscontrib] was to
 implement a global, non-rolling connected components algorithm over
 sliding windows (finding global clusters in parallel with overlapping
 windows to capture a sense of change, and discarding previous
@@ -203,12 +202,13 @@ heavy processing is done upstream and in parallel.
 
 The UI is built as a mobile-first [Bootstrap][bootstrap] web app, with
 visualizations built in [Sigma.js][sigma] and [Plotly][plot.ly], and
-server-push communications using [Socket.IO][socketio] (javascript
-client). This app is served by a Flask web server that uses websocket
-broadcast messages (socketio python) to push new data frames down to
-the browser clients. Flask recieves these new data frames via a
-[RethinkDB changefeed][changefeed], with a registered change listener
-that performs the previously mentioned broadcast.
+server-push communications using [Socket.IO][socketio]
+(javascript). This app is served by a Flask web server that uses
+websocket broadcast messages via Socket.IO (python) to push new data
+frames down to the browser clients. The Flask server recieves these
+new data frames via a [RethinkDB changefeed][changefeed], with a
+registered change listener that performs the previously-mentioned
+broadcast.
 
 
 <br clear="all" />
@@ -256,10 +256,11 @@ the performance. This fairly simple setup can process 10 years worth
 of GitHub Event data in about 7 hours; roughly 2.5 Terabytes in 7
 hours, or 8.5TB per day.
 
-The primary downside to a multitenant setup is the overhead of a more
-complicated recovery situation, but in the context of building this
-3-week prototype, I felt it was worth acknowledging that drawback and
-moving on to cover the breadth of the problem.
+The primary downside to a multitenant setup (in the absence of
+resource contention) is the overhead of a more complicated recovery
+situation, but in the context of building this 3-week prototype, I
+felt it was worth acknowledging that drawback and moving on to cover
+the breadth of the problem.
 
 The two most likely bottlenecks are venturi and flinkCC, since they
 perform the most processing on the most data, and this task is
