@@ -108,13 +108,15 @@ and included via maven dependencies.
 
 ### 2.1 Mock Firehose
 
+<img align="left" src="res/mock_firehose.jpg" />
+
 [Source](1.mock-firehose)
 
-<img align="left" src="res/mock_firehose.jpg" /> Since GitHub does not
-have an events firehose I could use for this project, I set about
-creating one of my own. I chose to maintain my source of truth in
-Amazon S3, and dial up the throughput using multiple independent EC2
-nodes that stream from S3 into my Kafka ingestion endpoint.
+Since GitHub does not have an events firehose I could use for this
+project, I set about creating one of my own. I chose to maintain my
+source of truth in Amazon S3, and dial up the throughput using
+multiple independent EC2 nodes that stream from S3 into my Kafka
+ingestion endpoint.
 
 The initial setup was fairly tedious. The event data are provided
 across 5 [Google BigQuery][ghbigquery] tables. I exported this data in
@@ -130,7 +132,7 @@ messages into a Kafka topic. I did this in Java using the AWS SDK,
 Kafka's java libraries, Avro's java libraries, and Twitter's
 [bijection][bijection] tool for simpler deserialization.
 
-
+<br clear="all" />
 ### 2.2 Venturi
 
 [Source](2.venturi)
