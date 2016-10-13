@@ -195,12 +195,18 @@ heavy processing is done upstream in parallel.
 <br clear="all" />
 ### 2.4 UI
 
+<img align="right" src="res/uiserver.jpg" />
+
 [Source](4.ui-server)
 
 
 
 
+
+<br clear="all" />
 ### 2.5 RethinkDB
+
+<img align="left" src="res/rethink.jpg" />
 
 [Source](5.kafkaRethink)
 
@@ -208,6 +214,7 @@ heavy processing is done upstream in parallel.
 
 
 
+<br clear="all" />
 ## 3. Performance
 
 At 20,000 events per second, Network Pulse chugs along without
