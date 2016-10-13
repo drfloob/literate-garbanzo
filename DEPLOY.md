@@ -1,6 +1,9 @@
-
-
 ## Getting Started
+
+This guide should get you up and running with your own Network Pulse
+cluster. Before beginning, you'll need to install and configure
+[Pegasus][pegasus] to work with your AWS credentials.
+
 
 ```bash
 peg up 0.ec2-setup/peg/quad/master.yml&
@@ -248,3 +251,6 @@ peg sshcmd-cluster literate-garbanzo-producers "pkill runFirehose.sh"
 
 
 ```
+
+
+[pegasus]: https://github.com/insightdatascience/pegasus

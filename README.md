@@ -2,21 +2,22 @@
 
 ## Index
 
-1. [Introduction](README.md#1-introduction)
- * 1.1 [Details](README.md#11-details)
-2. [The Pipeline](README.md#2-the-pipeline)
- * 2.1 [Overview](README.md#21-overview)
- * 2.2 [Mock Firehose](README.md#22-mock-firehose)
- * 2.3 [Venturi](README.md#23-venturi)
- * 2.4 [Flink Connected Components](README.md#24-flink-connected-components)
- * 2.5 [RethinkDB](README.md#25-rethinkdb)
- * 2.6 [UI](README.md#26-ui)
-3. [Performance](README.md#3-performance)
+0. [Introduction](README.md#1-introduction)
+ * 0.1 [Details](README.md#11-details)
+1. [The Pipeline](README.md#2-the-pipeline)
+ * 1.0 [Avro Schema](README.md#20-avro-schema)
+ * 1.1 [Mock Firehose](README.md#22-mock-firehose)
+ * 1.2 [Venturi](README.md#23-venturi)
+ * 1.3 [Flink Connected Components](README.md#24-flink-connected-components)
+ * 1.4 [UI](README.md#26-ui)
+ * 1.5 [RethinkDB](README.md#25-rethinkdb)
+2. [Performance](README.md#3-performance)
+3. [Future Work](README.md#4-future-work)
+4. [Deployment](README.md#5-deployment)
 
 
 
-
-## 1. Introduction
+## 0. Introduction
 
 Think: Facebook and Linkedin. These are giant networks, growing by the
 second, and they play a key role in many of our lives. It's been the
@@ -45,11 +46,12 @@ goals. I created Network Pulse in 3 weeks as part of the [Insight Data
 Engineering Fellowship Program][InsightDE].
 
 
-### 1.1 Details
+### 0.1 Project Details
 
-Network Pulse operates over [GitHub's Archive of Event data][gharchive]: roughly 1.2 Terabytes of
-github event metadata, recorded from 2011 to 2015, encompassing 20+
-GitHub activities, from Commit Comments to Watch Events.
+The Network Pulse demo is set up to operate over [GitHub's Archive of
+Event data][gharchive]: roughly 1.2 Terabytes of github event
+metadata, recorded from 2011 to 2015, encompassing 20+ GitHub
+activities, from Commit Comments to Watch Events.
 
 For the purposes of this graph analysis, GitHub users are represented
 as nodes (or vertices) in the graph ...
@@ -61,39 +63,58 @@ between vertices.
 
 ![Events are Edges](res/events_are_edges.jpg)
 
-For example, when someone submits a pull request to someone else's
-repo, this is translated to a PullRequestEvent in the GitHub data, and
-represented as a connection between a user and the owner of the
-repository in Network Pulse's graph.
+For example, when User A submits a pull request to User B's repo, this
+is translated to a PullRequestEvent in the GitHub data, and
+represented as a connection between users A and B in Network Pulse's
+graph.
 
-A large fraction of the data is filtered out post-ingestion: roughly
-60% on average, but it fluctuates over the years. The primary reason
-events are filtered out is because they do not represent an
-interaction between two distinct users. For example, a PushEvent to my
-own repo does not involve two distinct users, so it is filtered out
-for the purposes of clustering users. These sorts of "cyclic" events
-appear to happen more with some kinds of events than with others, but
-there is a fair spread across the data.
+About 55% of the data is filtered out post-ingestion. The primary
+reason is because many GitHub events are created by people working on
+their own repos, and don't represent a connection between distinct
+individuals. Events like these are filtered out for the purposes of
+clustering users.
 
 
-## 2. The Pipeline
+## 1. The Pipeline
 
-### 2.1 Overview
+![The Network Pulse Pipeline](res/pipeline.jpg)
 
-### 2.2 Mock Firehose
+There are 5 independent sub-projects within the codebase, and one
+additional project with cross-cutting concerns.
 
-### 2.3 Venturi
+### 1.0 Avro Schema
 
-### 2.4 Flink Connected Components
+There are two Avro schemas in play:
 
-### 2.5 RethinkDB
+ * the data that comes from GitHub's Archive, and
+ * the trimmed-down version Network Pulse works with
 
-### 2.6 UI
+The GitHub Archive schema was extracted from the Avro source data, and
+I designed the trimmed-down version to provide the minimum amount of
+information needed to accomplish the overarching goal.
+
+Both schemas were used to generate the Java Objects that are used for
+schema-specific serialization and deserialization of the event
+byte-stream flowing through Kafka. More on that soon.
+
+
+### 1.1 Mock Firehose
+
+
+
+### 1.2 Venturi
+
+### 1.3 Flink Connected Components
+
+### 1.4 UI
+
+### 1.5 RethinkDB
 
 
 
 
-## 3. Performance
+
+## 2. Performance
 
 At 20,000 events per second, Network Pulse chugs along without
 complaint. There are 9 servers in total:
@@ -118,7 +139,22 @@ look forward to watching (and helping) Flink mature.
 
 
 
+## 3. Future Work
+
+
+## 4. Deployment
+
+Much of the ops work on this project was done using the
+[Pegasus][pegasus] deployment and management tool. If you'd like to
+run your own network pulse cluster, the installation and launch
+instructions can be found in the [DEPLOY][deploy] guide.
+
+
+
+
 [demo]: https://drfloob.com/pulse
 [slides]: https://drfloob.com/pulse/slides
 [InsightDE]: http://insightdataengineering.com/
 [gharchive]: https://www.githubarchive.org/
+[pegasus]: https://github.com/insightdatascience/pegasus
+[deploy]: DEPLOY.md
