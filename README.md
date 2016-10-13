@@ -199,8 +199,13 @@ heavy processing is done upstream in parallel.
 
 [Source](4.ui-server)
 
-
-
+The UI is a mobile-first [Bootstrap][bootstrap] web app, with
+visualizations built in [Sigma.js][sigma] and [Plotly][plot.ly], and
+server-push communications using [Socket.IO][socketio] (javascript
+client). This app is served by a Flask server that uses websocket
+broadcast messages (socketio python) to push new data frames down to
+the browser clients. These data frames are being pushed to the Flask
+server via a [RethinkDB changefeed][changefeed].
 
 
 <br clear="all" />
@@ -210,8 +215,25 @@ heavy processing is done upstream in parallel.
 
 [Source](5.kafkaRethink)
 
+I wanted to persist the windowed cluster data in a way that would
+allow many clients to subscribe to changes in this data in an
+efficient way. RethinkDB was designed well for this task. I created a
+cluster of three RethinkDB nodes with three partitions and two
+replications, to distribute the load, and provide some durability. I
+also installed RethinkDB Proxies on my "kafkaRethink" nodes (see
+below), which are designed to improve the cluster's efficiency.
 
+Unfortunately, I did not find a great way to connect Flink to
+RethinkDB in a durable way, as Flink is still a fairly young product
+and it seems relatively few people are using it with RethinkDB.
 
+My solution was to use Kafka once again, this time as the ether
+between Flink and Rethink for the windowed cluster data, and to create
+yet another Kafka consumer, but one that uses RethinkDB's libraries to
+persist the data. Kafka provides some durability here, but the
+"kafkaRethink" process does not yet do well in network splits or node
+crash scenarios. A more robust solution here would be a decent
+investment.
 
 
 <br clear="all" />
@@ -226,12 +248,12 @@ complaint. There are 9 servers in total:
 
 Originally prototyped 100% multitenant, I opted to test the limits of
 this system before separating technologies, and I was quite happy with
-the performance. This fairly simple setup can process 8 years worth of
-GitHub Event data in about 7 hours, or roughly 2.5 Terabytes in 7
+the performance. This fairly simple setup can process 10 years worth
+of GitHub Event data in about 7 hours, or roughly 2.5 Terabytes in 7
 hours. The primary downside to a multitenant setup is the overhead of
 a more complicated recovery situation, but for the sake of this
 prototype, I felt it was worth acknowledging that drawback and moving
-on.
+on to cover the breadth of the problem.
 
 The two most likely bottlenecks (venturi and flinkCC) are horizontally
 scalable (via Kafka consumer groups and Flink parallelism,
@@ -245,11 +267,12 @@ look forward to watching (and helping) Flink mature.
 
 ## 5. Deployment
 
+See the [DEPLOY][deploy] guide.
+
 Much of the ops work on this project was done using the
 [Pegasus][pegasus] deployment and management tool. If you'd like to
-run your own network pulse cluster, the installation and launch
-instructions can be found in the [DEPLOY][deploy] guide.
-
+run your own Network Pulse cluster, the guide above walks you through
+the initial setup.
 
 
 
@@ -265,3 +288,8 @@ instructions can be found in the [DEPLOY][deploy] guide.
 [flink]: https://flink.apache.org/
 [dataflow]: http://research.google.com/pubs/archive/43864.pdf
 [gscontrib]: https://github.com/vasia/gelly-streaming/pull/26
+[bootstrap]: https://getbootstrap.com/
+[sigma]: http://sigmajs.org/
+[plot.ly]: https://plot.ly/
+[socketio]: http://socket.io/
+[changefeed]: https://rethinkdb.com/docs/changefeeds/javascript/
