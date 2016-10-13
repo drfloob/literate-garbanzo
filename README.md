@@ -2,22 +2,22 @@
 
 ## Index
 
-0. [Introduction](README.md#1-introduction)
- * 0.1 [Details](README.md#11-details)
-1. [The Pipeline](README.md#2-the-pipeline)
- * 1.0 [Avro Schema](README.md#20-avro-schema)
- * 1.1 [Mock Firehose](README.md#22-mock-firehose)
- * 1.2 [Venturi](README.md#23-venturi)
- * 1.3 [Flink Connected Components](README.md#24-flink-connected-components)
- * 1.4 [UI](README.md#26-ui)
- * 1.5 [RethinkDB](README.md#25-rethinkdb)
-2. [Performance](README.md#3-performance)
-3. [Future Work](README.md#4-future-work)
-4. [Deployment](README.md#5-deployment)
+1. [Introduction](README.md#1-introduction)
+ * 1.1 [Details](README.md#11-details)
+2. [The Pipeline](README.md#2-the-pipeline)
+ * 2.0 [Avro Schema](README.md#20-avro-schema)
+ * 2.1 [Mock Firehose](README.md#22-mock-firehose)
+ * 2.2 [Venturi](README.md#23-venturi)
+ * 2.3 [Flink Connected Components](README.md#24-flink-connected-components)
+ * 2.4 [UI](README.md#26-ui)
+ * 2.5 [RethinkDB](README.md#25-rethinkdb)
+3. [Performance](README.md#3-performance)
+4. [Future Work](README.md#4-future-work)
+5. [Deployment](README.md#5-deployment)
 
 
 
-## 0. Introduction
+## 1. Introduction
 
 Think: Facebook and Linkedin. These are giant networks, growing by the
 second, and they play a key role in many of our lives. It's been the
@@ -46,7 +46,7 @@ goals. I created Network Pulse in 3 weeks as part of the [Insight Data
 Engineering Fellowship Program][InsightDE].
 
 
-### 0.1 Project Details
+### 1.1 Project Details
 
 The Network Pulse demo is set up to operate over [GitHub's Archive of
 Event data][gharchive]: roughly 1.2 Terabytes of github event
@@ -75,14 +75,14 @@ individuals. Events like these are filtered out for the purposes of
 clustering users.
 
 
-## 1. The Pipeline
+## 2. The Pipeline
 
 ![The Network Pulse Pipeline](res/pipeline.jpg)
 
 There are 5 independent sub-projects within the codebase, and one
 additional project with cross-cutting concerns.
 
-### 1.0 Avro Schema
+### 2.0 Avro Schema
 
 There are two Avro schemas in play:
 
@@ -98,23 +98,23 @@ schema-specific serialization and deserialization of the event
 byte-stream flowing through Kafka. More on that soon.
 
 
-### 1.1 Mock Firehose
+### 2.1 Mock Firehose
 
 
 
-### 1.2 Venturi
+### 2.2 Venturi
 
-### 1.3 Flink Connected Components
+### 2.3 Flink Connected Components
 
-### 1.4 UI
+### 2.4 UI
 
-### 1.5 RethinkDB
-
-
+### 2.5 RethinkDB
 
 
 
-## 2. Performance
+
+
+## 3. Performance
 
 At 20,000 events per second, Network Pulse chugs along without
 complaint. There are 9 servers in total:
@@ -139,10 +139,10 @@ look forward to watching (and helping) Flink mature.
 
 
 
-## 3. Future Work
+## 4. Future Work
 
 
-## 4. Deployment
+## 5. Deployment
 
 Much of the ops work on this project was done using the
 [Pegasus][pegasus] deployment and management tool. If you'd like to
