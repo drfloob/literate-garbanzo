@@ -31,8 +31,8 @@
 Think: Facebook and Linkedin. These are giant networks of people,
 growing by the second, and they play a key role in many of our
 lives. If you want to do something interesting with the data that
-drives these networks, until recently, you'd have to gather all your
-years of data and process it over hours to days.
+drives these networks, until recently, you'd have to gather all the
+years of data and process it over hours, or days.
 
 **Network Pulse is a distributed, fault-tolerant big data pipeline
 that performs graph analysis over unbounded data streams.** *It's
@@ -72,10 +72,10 @@ between vertices.
 
 ![Events are Edges](res/events_are_edges.jpg)
 
-For example, when User A submits a pull request to User B's repo, this
-is translated to a PullRequestEvent in the GitHub data, and
-represented as a connection between users A and B in Network Pulse's
-graph.
+The goal of this project is to find clusters of people as they
+interact, directly and indirectly
+
+![Clusters of people](res/clusters.jpg)
 
 ## 2. The Pipeline
 
