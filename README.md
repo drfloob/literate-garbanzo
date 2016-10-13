@@ -139,9 +139,9 @@ Kafka's java libraries, Avro's java libraries, and Twitter's
 
 [Source](2.venturi)
 
-The data needed for this clustering operation is quite a bit smaller
-than the data provided, so I created Venturi to serve as a parsing and
-filtering layer in the pipeline.
+The data needed for this clustering operation is significantly less
+than the size of the source data, so I created Venturi to serve as a
+parsing and filtering layer in the pipeline.
 
 The result is a Java process that acts as both a Kafka Consumer and
 Producer:
@@ -152,11 +152,11 @@ Producer:
  * creating a new skinny avro record, and
  * producing a byte-stream-serialized version of it on a new Kafka topic.
 
-About 55% of the data is filtered out in this process. The primary
-reason is because many GitHub events are created by people working on
-their own repos, and don't represent a connection between distinct
-individuals. Events like these are filtered out for the purposes of
-clustering users.
+About 55% of the data is filtered out in this process as well. The
+primary reason is because many GitHub events are created by people
+working on their own repos, and don't represent a connection between
+distinct individuals. Events like these are filtered out for the
+purposes of clustering users.
 
 
 
@@ -167,7 +167,7 @@ clustering users.
 
 [Source](3.flinkCC)
 
-The engine of this pipeline is implement in Flink using the
+The engine of this pipeline is implemented in Flink using the
 experimental [gelly-streaming][gelly-streaming]
 library. [Flink][flink] is an open source Kappa-architecture-esque
 tool primarily based on [Google's Dataflow Model][dataflow].
@@ -314,7 +314,7 @@ the initial setup.
 [deploy]: DEPLOY.md
 [ghbigquery]: https://bigquery.cloud.google.com/table/githubarchive:year.2011?pli=1
 [bijection]: https://github.com/twitter/bijection
-[gelly-streamgin]: https://github.com/vasia/gelly-streaming
+[gelly-streaming]: https://github.com/vasia/gelly-streaming
 [flink]: https://flink.apache.org/
 [dataflow]: http://research.google.com/pubs/archive/43864.pdf
 [gscontrib]: https://github.com/vasia/gelly-streaming/pull/26
