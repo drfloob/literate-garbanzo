@@ -30,13 +30,11 @@ that performs graph analysis over unbounded data streams.** *Streaming
 graph analysis at the pace of change.* Its goal is to find clusters of
 people who interact with each other, as its happening.
 
-With this information, we could find who the most influential people
+ * With this information, we could find who the most influential people
 are *as they develop their influence*.
-
-We could recommend new connections *when the connections are most
+ * We could recommend new connections *when the connections are most
 relevant*.
-
-We could predict who would most easily bridge two separated groups,
+ * We could predict who would most easily bridge two separated groups,
 and use that information to strengthen a community *when momentum is
 at its peak*.
 
