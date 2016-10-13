@@ -19,7 +19,7 @@
  * 2.2 [Venturi](README.md#22-venturi)
  * 2.3 [Flink Connected Components](README.md#23-flink-connected-components)
  * 2.4 [UI Server](README.md#24-ui-server)
- * 2.5 [RethinkDB](README.md#25-rethinkdb)
+ * 2.5 [RethinkDB Persistence from Flink](README.md#25-rethinkdb-persistence-from-flink)
 3. [Performance](README.md#3-performance)
 4. [Future Work](README.md#4-future-work)
 5. [Deployment](README.md#5-deployment)
@@ -113,11 +113,11 @@ and included via maven dependencies.
 
 [Source](1.mock-firehose)
 
-Since GitHub does not have an events firehose I could use for this
-project, I set about creating one of my own. I chose to maintain my
-source of truth in Amazon S3, and dial up the throughput using
-multiple independent EC2 nodes that stream from S3 into my Kafka
-ingestion endpoint.
+Since GitHub does not have a firehose I could use for this project, I
+set about creating one of my own. I chose to maintain my source of
+truth in Amazon S3, and dial up the throughput using multiple
+independent EC2 nodes that stream from S3 into my Kafka ingestion
+endpoint.
 
 The initial setup was fairly tedious. The event data are provided
 across 5 [Google BigQuery][ghbigquery] tables. I exported this data in
@@ -212,20 +212,19 @@ broadcast.
 
 
 <br clear="all" />
-### 2.5 RethinkDB
-
-<img align="left" src="res/rethink.jpg" />
+### 2.5 RethinkDB Persistence from Flink
 
 [Source](5.kafkaRethink)
 
 I wanted to persist the windowed cluster data in a way that would
 allow many clients to subscribe and view the stream of clusters in an
-efficient way, currently at about 8 frames per second. [RethinkDB][rethink] was
-designed well for this task. I created a cluster of three RethinkDB
-nodes with three partitions and two replications, to distribute the
-load, and provide some durability. I also installed RethinkDB Proxies
-on my "kafkaRethink" nodes (see below), which are designed to improve
-the cluster's overall efficiency.
+efficient way, currently at about 5 frames per
+second. [RethinkDB][rethink] was designed well for this task. I
+created a cluster of three RethinkDB nodes with three partitions and
+two replications, to distribute the load, and provide some
+durability. I also installed RethinkDB Proxies on my "kafkaRethink"
+nodes (see below), which are designed to improve the cluster's overall
+efficiency.
 
 Unfortunately, I did not find a great way to connect Flink to
 RethinkDB in a durable way, as Flink is still a fairly young product
@@ -282,10 +281,10 @@ algorithm][mcmf] in Gelly-Streaming. This would solve the first use
 case outlined in the Introduction: finding influencers as they develop
 their influence.
 
-The second example in the introduction -- recommending new connections
-in a timely way -- would likely be solved with a batch component that
-calculates the long history of everyone's interactions, and a
-streaming pattern matching component to establish a sense of
+The second example given in the introduction -- recommending new
+connections in a timely way -- would likely be solved with a batch
+component that calculates the long history of everyone's interactions,
+and a streaming pattern matching component to establish a sense of
 timeliness and context in which to evaluate a recommendation
 opportunity.
 
