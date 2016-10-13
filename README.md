@@ -3,13 +3,13 @@
 ## Index
 
 1. [Introduction](README.md#1-introduction)
- * 1.1 [Details](README.md#11-details)
+ * 1.1 [Project Details](README.md#11-project-details)
 2. [The Pipeline](README.md#2-the-pipeline)
  * 2.0 [Avro Schema](README.md#20-avro-schema)
- * 2.1 [Mock Firehose](README.md#22-mock-firehose)
- * 2.2 [Venturi](README.md#23-venturi)
- * 2.3 [Flink Connected Components](README.md#24-flink-connected-components)
- * 2.4 [UI](README.md#26-ui)
+ * 2.1 [Mock Firehose](README.md#21-mock-firehose)
+ * 2.2 [Venturi](README.md#22-venturi)
+ * 2.3 [Flink Connected Components](README.md#23-flink-connected-components)
+ * 2.4 [UI](README.md#24-ui)
  * 2.5 [RethinkDB](README.md#25-rethinkdb)
 3. [Performance](README.md#3-performance)
 4. [Future Work](README.md#4-future-work)
