@@ -1,3 +1,9 @@
+# !! PET PROJECT ALERT !!
+
+Welcome! Thank you for your interest! This was a small project I worked on for about 3 weeks in the Fall of 2016. It is a hacked-together prototype, kept alive on my github account so I can look back and remember that one time I did a thing.
+
+I do not recommend you build off this work (or even look at it that closely).
+
 # Network Pulse
 
 ![Network Pulse - graph analysis at the pace of change](res/pulse.jpg)
